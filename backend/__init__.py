@@ -65,3 +65,6 @@ def create_app(config_name=None):
     app.cli.add_command(add_pins_command)
 
     return app
+
+
+app = create_app()
