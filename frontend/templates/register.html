@@ -277,107 +277,6 @@
         color: var(--success);
     }
 
-    /* File Upload */
-    .upload-zone {
-        border: 2px dashed var(--border-light);
-        border-radius: var(--radius-md);
-        padding: 30px;
-        text-align: center;
-        cursor: pointer;
-        transition: var(--transition);
-        position: relative;
-    }
-
-    .upload-zone:hover,
-    .upload-zone:focus {
-        border-color: var(--accent-gold);
-        background: rgba(212, 175, 55, 0.03);
-    }
-
-    .upload-zone.dragover {
-        border-color: var(--accent-gold);
-        background: rgba(212, 175, 55, 0.05);
-    }
-
-    .upload-zone .upload-icon {
-        font-size: 40px;
-        display: block;
-        margin-bottom: 10px;
-    }
-
-    .upload-zone .upload-text {
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .upload-zone .upload-subtext {
-        font-size: 12px;
-        opacity: 0.6;
-        margin-top: 5px;
-    }
-
-    .upload-zone input[type="file"] {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-    }
-
-    .upload-preview {
-        display: none;
-        margin-top: 10px;
-        padding: 10px;
-        background: var(--light-grey);
-        border-radius: var(--radius-md);
-        align-items: center;
-        gap: 10px;
-    }
-
-    .upload-preview.show {
-        display: flex;
-    }
-
-    .upload-preview .preview-icon {
-        font-size: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 40px;
-    }
-
-    .upload-preview .preview-icon img {
-        max-width: 40px;
-        max-height: 40px;
-        border-radius: 6px;
-        object-fit: cover;
-    }
-
-    .upload-preview .preview-info {
-        flex: 1;
-    }
-
-    .upload-preview .preview-info .file-name {
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .upload-preview .preview-info .file-size {
-        font-size: 12px;
-        opacity: 0.6;
-    }
-
-    .upload-preview .remove-file {
-        background: none;
-        border: none;
-        color: var(--error);
-        cursor: pointer;
-        font-size: 18px;
-        padding: 5px 8px;
-    }
-
     /* Navigation Buttons */
     .form-navigation {
         display: flex;
@@ -646,21 +545,16 @@
                     </div>
                     <div class="step-indicator" data-step="6">
                         <div class="step-circle">6</div>
-                        <span class="step-label">Documents</span>
-                    </div>
-                    <div class="step-indicator" data-step="7">
-                        <div class="step-circle">7</div>
                         <span class="step-label">Review</span>
                     </div>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-bar-fill" id="progressFill" style="width: 14.28%;"></div>
+                    <div class="progress-bar-fill" id="progressFill" style="width: 16.66%;"></div>
                 </div>
             </div>
 
             <!-- Form -->
-            <form id="registrationForm" method="POST" action="{{ url_for('auth.register') }}"
-                enctype="multipart/form-data">
+            <form id="registrationForm" method="POST" action="{{ url_for('auth.register') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
                 <input type="hidden" name="current_step" id="currentStep" value="1">
 
@@ -1001,114 +895,8 @@
                     </div>
                 </div>
 
-                <!-- STEP 6: Documents & KYC -->
+                <!-- STEP 6: Review & Submit -->
                 <div class="form-step" data-step="6">
-                    <h3>📄 Identity Verification (KYC)</h3>
-                    <p class="step-description">Upload your identification documents for verification.</p>
-
-                    <div class="form-group">
-                        <label>Primary Identification <span class="required">*</span></label>
-                        <select name="primary_id_type" required>
-                            <option value="">Select ID type...</option>
-                            <option value="Passport">Passport</option>
-                            <option value="UK Driving Licence">UK Driving Licence</option>
-                            <option value="National Identity Card">National Identity Card</option>
-                            <option value="Residence Permit">Residence Permit</option>
-                        </select>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Front of Valid ID <span class="required">*</span></label>
-                            <div class="upload-zone" role="button" tabindex="0" aria-label="Upload front of ID">
-                                <span class="upload-icon">📷</span>
-                                <div class="upload-text">Click or tap to upload</div>
-                                <div class="upload-subtext">JPG, PNG, PDF (Max 10MB)</div>
-                                <input type="file" name="id_front" id="idFrontInput" accept=".jpg,.jpeg,.png,.pdf"
-                                    required>
-                            </div>
-                            <div class="upload-preview" id="idFrontPreview">
-                                <span class="preview-icon">📄</span>
-                                <div class="preview-info">
-                                    <div class="file-name" id="idFrontName"></div>
-                                    <div class="file-size" id="idFrontSize"></div>
-                                </div>
-                                <button type="button" class="remove-file" onclick="removeFile('idFront')">✕</button>
-                            </div>
-                            <div class="error-message" id="idFrontError"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Back of Valid ID <span class="required">*</span></label>
-                            <div class="upload-zone" role="button" tabindex="0" aria-label="Upload back of ID">
-                                <span class="upload-icon">📷</span>
-                                <div class="upload-text">Click or tap to upload</div>
-                                <div class="upload-subtext">JPG, PNG, PDF (Max 10MB)</div>
-                                <input type="file" name="id_back" id="idBackInput" accept=".jpg,.jpeg,.png,.pdf"
-                                    required>
-                            </div>
-                            <div class="upload-preview" id="idBackPreview">
-                                <span class="preview-icon">📄</span>
-                                <div class="preview-info">
-                                    <div class="file-name" id="idBackName"></div>
-                                    <div class="file-size" id="idBackSize"></div>
-                                </div>
-                                <button type="button" class="remove-file" onclick="removeFile('idBack')">✕</button>
-                            </div>
-                            <div class="error-message" id="idBackError"></div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Selfie / Passport-style Photograph <span class="required">*</span></label>
-                        <div class="upload-zone" role="button" tabindex="0" aria-label="Upload selfie">
-                            <span class="upload-icon">🤳</span>
-                            <div class="upload-text">Click or tap to upload</div>
-                            <div class="upload-subtext">JPG, PNG (Max 10MB)</div>
-                            <input type="file" name="selfie" id="selfieInput" accept=".jpg,.jpeg,.png" required>
-                        </div>
-                        <div class="upload-preview" id="selfiePreview">
-                            <span class="preview-icon">📄</span>
-                            <div class="preview-info">
-                                <div class="file-name" id="selfieName"></div>
-                                <div class="file-size" id="selfieSize"></div>
-                            </div>
-                            <button type="button" class="remove-file" onclick="removeFile('selfie')">✕</button>
-                        </div>
-                        <div class="error-message" id="selfieError"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Address Verification <span class="required">*</span></label>
-                        <select name="address_proof_type" required>
-                            <option value="">Select document...</option>
-                            <option value="Utility Bill">Utility Bill (last 3 months)</option>
-                            <option value="Bank Statement">Bank Statement (last 3 months)</option>
-                            <option value="Council Tax Bill">Council Tax Bill</option>
-                            <option value="Government Letter">Government Letter</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <div class="upload-zone" role="button" tabindex="0" aria-label="Upload address proof">
-                            <span class="upload-icon">📄</span>
-                            <div class="upload-text">Click or tap to upload</div>
-                            <div class="upload-subtext">JPG, PNG, PDF (Max 10MB)</div>
-                            <input type="file" name="address_proof" id="addressProofInput" accept=".jpg,.jpeg,.png,.pdf"
-                                required>
-                        </div>
-                        <div class="upload-preview" id="addressProofPreview">
-                            <span class="preview-icon">📄</span>
-                            <div class="preview-info">
-                                <div class="file-name" id="addressProofName"></div>
-                                <div class="file-size" id="addressProofSize"></div>
-                            </div>
-                            <button type="button" class="remove-file" onclick="removeFile('addressProof')">✕</button>
-                        </div>
-                        <div class="error-message" id="addressProofError"></div>
-                    </div>
-                </div>
-
-                <!-- STEP 7: Review & Submit -->
-                <div class="form-step" data-step="7">
                     <h3>✅ Review & Submit</h3>
                     <p class="step-description">Please review your information before submitting.</p>
 
@@ -1239,7 +1027,7 @@
     // STEP NAVIGATION
     // ============================================
     let currentStep = 1;
-    const totalSteps = 7;
+    const totalSteps = 6;
 
     function changeStep(delta) {
         const newStep = currentStep + delta;
@@ -1285,20 +1073,11 @@
         let valid = true;
 
         inputs.forEach(input => {
-            if (input.type === "file") {
-                if (input.files.length === 0) {
-                    input.classList.add("error");
-                    valid = false;
-                } else {
-                    input.classList.remove("error");
-                }
+            if (!input.value.trim()) {
+                input.classList.add("error");
+                valid = false;
             } else {
-                if (!input.value.trim()) {
-                    input.classList.add("error");
-                    valid = false;
-                } else {
-                    input.classList.remove("error");
-                }
+                input.classList.remove("error");
             }
         });
 
@@ -1374,93 +1153,6 @@
         strengthText.textContent = password ? message : 'Enter a strong password';
         strengthText.className = 'strength-text ' + (password ? level : '');
     });
-
-    // ============================================
-    // ENHANCED MOBILE‑FRIENDLY FILE UPLOAD
-    // ============================================
-    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
-    const MAX_SIZE = 10 * 1024 * 1024;
-
-    function setupUploadZone(inputId, previewId, nameId, sizeId, errorId) {
-        const input = document.getElementById(inputId);
-        const preview = document.getElementById(previewId);
-        const nameEl = document.getElementById(nameId);
-        const sizeEl = document.getElementById(sizeId);
-        const errorEl = document.getElementById(errorId);
-        const zone = input.closest('.upload-zone');
-
-        zone.addEventListener('click', () => input.click());
-        zone.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                input.click();
-            }
-        });
-
-        input.addEventListener('change', function () {
-            const file = this.files[0];
-            errorEl.textContent = '';
-            preview.style.display = 'none';
-
-            if (!file) return;
-
-            if (!ALLOWED_TYPES.includes(file.type)) {
-                errorEl.textContent = '❌ Only JPG, PNG, or PDF allowed.';
-                this.value = '';
-                return;
-            }
-
-            if (file.size > MAX_SIZE) {
-                errorEl.textContent = '❌ File is too large (max 10MB).';
-                this.value = '';
-                return;
-            }
-
-            nameEl.textContent = file.name;
-            sizeEl.textContent = (file.size / 1024).toFixed(1) + ' KB';
-
-            const previewIcon = preview.querySelector('.preview-icon');
-            if (previewIcon) {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        previewIcon.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width:40px;max-height:40px;border-radius:6px;object-fit:cover;">`;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    previewIcon.innerHTML = '📄';
-                }
-            }
-
-            preview.style.display = 'flex';
-            input.classList.add('success');
-        });
-    }
-
-    function removeFile(type) {
-        const config = {
-            'idFront': { input: 'idFrontInput', preview: 'idFrontPreview', error: 'idFrontError' },
-            'idBack': { input: 'idBackInput', preview: 'idBackPreview', error: 'idBackError' },
-            'selfie': { input: 'selfieInput', preview: 'selfiePreview', error: 'selfieError' },
-            'addressProof': { input: 'addressProofInput', preview: 'addressProofPreview', error: 'addressProofError' }
-        };
-        const c = config[type];
-        if (!c) return;
-        const input = document.getElementById(c.input);
-        const preview = document.getElementById(c.preview);
-        const error = document.getElementById(c.error);
-        input.value = '';
-        preview.style.display = 'none';
-        error.textContent = '';
-        input.classList.remove('success');
-        const icon = preview.querySelector('.preview-icon');
-        if (icon) icon.innerHTML = ''; // clear thumbnail
-    }
-
-    setupUploadZone('idFrontInput', 'idFrontPreview', 'idFrontName', 'idFrontSize', 'idFrontError');
-    setupUploadZone('idBackInput', 'idBackPreview', 'idBackName', 'idBackSize', 'idBackError');
-    setupUploadZone('selfieInput', 'selfiePreview', 'selfieName', 'selfieSize', 'selfieError');
-    setupUploadZone('addressProofInput', 'addressProofPreview', 'addressProofName', 'addressProofSize', 'addressProofError');
 
     // ============================================
     // FORM SUBMISSION

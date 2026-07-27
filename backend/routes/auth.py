@@ -61,7 +61,6 @@ def register():
                 "security_answer_2",
                 "security_question_3",
                 "security_answer_3",
-                "primary_id_type",
                 "emergency_name",
                 "emergency_relationship",
                 "emergency_phone",
@@ -69,6 +68,7 @@ def register():
                 "privacy",
                 "data_processing",
             ]
+
             for field in required_fields:
                 if field not in form_data or not form_data[field].strip():
                     return (
@@ -190,45 +190,6 @@ def register():
                 user_agent=request.headers.get("User-Agent"),
             )
             db.session.add(pending_app)
-            db.session.commit()
-
-            # Handle file uploads
-            upload_dir = os.path.join(
-                current_app.config["UPLOAD_FOLDER"], "kyc", str(pending_app.id)
-            )
-            os.makedirs(upload_dir, exist_ok=True)
-            file_fields = ["id_front", "id_back", "selfie", "address_proof"]
-            for field in file_fields:
-                if field in request.files:
-                    file = request.files[field]
-                    if file and file.filename:
-                        ext = (
-                            file.filename.rsplit(".", 1)[1].lower()
-                            if "." in file.filename
-                            else ""
-                        )
-                        if ext not in current_app.config["ALLOWED_EXTENSIONS"]:
-                            return (
-                                jsonify(
-                                    {
-                                        "success": False,
-                                        "error": f"{field} invalid file type",
-                                    }
-                                ),
-                                400,
-                            )
-                        safe_filename = f"{field}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{ext}"
-                        file_path = os.path.join(upload_dir, safe_filename)
-                        file.save(file_path)
-                        doc = KycDocument(
-                            application_id=pending_app.id,
-                            document_type=field,
-                            file_name=file.filename,
-                            file_path=file_path,
-                            file_size=os.path.getsize(file_path),
-                            file_type=ext,
-                        )
-                        db.session.add(doc)
             db.session.commit()
 
             # Audit log
