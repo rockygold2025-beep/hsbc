@@ -1,0 +1,575 @@
+{% extends "base.html" %}
+
+{% block title %}Settings & Security | HSBC Bank{% endblock %}
+
+{% block head %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-dark-blue) 0%, #00337C 100%);
+        color: var(--primary-white);
+        padding: 40px 0;
+    }
+
+    .hero-section h1 {
+        font-size: 32px;
+    }
+
+    .settings-card {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 25px;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 25px;
+    }
+
+    .settings-card h2 {
+        font-size: 20px;
+        color: var(--primary-dark-blue);
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-light);
+        margin-bottom: 20px;
+    }
+
+    .toggle-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .toggle-row:last-child {
+        border-bottom: none;
+    }
+
+    .toggle-info h4 {
+        font-size: 15px;
+        margin-bottom: 2px;
+    }
+
+    .toggle-info p {
+        font-size: 12px;
+        opacity: 0.7;
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 26px;
+        flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--border-light);
+        transition: .3s;
+        border-radius: 26px;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background: white;
+        transition: .3s;
+        border-radius: 50%;
+    }
+
+    input:checked+.toggle-slider {
+        background: var(--success);
+    }
+
+    input:checked+.toggle-slider:before {
+        transform: translateX(22px);
+    }
+
+    .security-status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px;
+        border-radius: var(--radius-md);
+        margin-bottom: 20px;
+        background: rgba(10, 127, 66, 0.08);
+        border-left: 4px solid var(--success);
+        color: var(--success);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    /* Profile Photo Upload */
+    .profile-photo-upload {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border-light);
+        margin-bottom: 15px;
+    }
+
+    .profile-photo-upload .current-photo {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid var(--accent-gold);
+        flex-shrink: 0;
+        background: var(--light-grey);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .profile-photo-upload .current-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-photo-upload .current-photo .default-avatar {
+        font-size: 32px;
+        color: var(--accent-gold);
+    }
+
+    .profile-photo-upload .photo-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .profile-photo-upload .photo-actions .btn-sm {
+        padding: 6px 16px;
+        font-size: 12px;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 600;
+    }
+
+    .profile-photo-upload .photo-actions .btn-upload {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+    }
+
+    .profile-photo-upload .photo-actions .btn-upload:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .profile-photo-upload .photo-actions .btn-remove {
+        background: var(--error);
+        color: white;
+    }
+
+    .profile-photo-upload .photo-actions .btn-remove:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    @media (max-width: 600px) {
+        .hero-section h1 {
+            font-size: 24px;
+        }
+
+        .btn-group {
+            flex-direction: column;
+        }
+
+        .btn-group button {
+            width: 100%;
+        }
+
+        .toggle-row {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .profile-photo-upload {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .profile-photo-upload .photo-actions {
+            align-items: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <h1>⚙️ Settings & Security</h1>
+        <p style="opacity:0.9;">Manage your personal details, login preferences, and security.</p>
+    </div>
+</section>
+
+<section style="padding: 40px 0;">
+    <div class="container">
+        <div class="security-status">
+            <span style="font-size:20px;">🛡️</span>
+            <div>
+                <strong>Your account security is strong</strong>
+                <p style="font-size:13px; opacity:0.8;">Two-factor authentication is active.</p>
+            </div>
+        </div>
+
+        <!-- Profile Photo -->
+        <div class="settings-card">
+            <h2>📸 Profile Photo</h2>
+            <div class="profile-photo-upload">
+                <div class="current-photo">
+                    {% if current_user.profile_photo %}
+                    <!-- ✅ SAFE VERSION – works with relative path -->
+                    <img src="{{ url_for('static', filename=current_user.profile_photo) }}" alt="Profile Photo"
+                        onerror="this.style.display='none'; this.parentElement.querySelector('.default-avatar').style.display='flex';">
+                    <span class="default-avatar" style="display:none;">👤</span>
+                    {% else %}
+                    <span class="default-avatar">👤</span>
+                    {% endif %}
+                </div>
+                <div class="photo-actions">
+                    <span style="font-size:14px; font-weight:600;">Profile Photo</span>
+                    <span style="font-size:12px; opacity:0.6;">Uploaded during KYC verification</span>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:5px;">
+                        <button class="btn-sm btn-upload"
+                            onclick="showToast('Upload new photo feature coming soon', 'info')">📷 Upload New</button>
+                        {% if current_user.profile_photo %}
+                        <button class="btn-sm btn-remove"
+                            onclick="if(confirm('Remove profile photo?')){showToast('Photo removed', 'info')}">🗑️
+                            Remove</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Details -->
+        <div class="settings-card">
+            <h2>👤 Personal Details</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+                    <small style="opacity:0.6;">Username cannot be changed</small>
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="form-control"
+                        value="{{ current_user.get_full_name() or current_user.username }}" disabled>
+                    <small style="opacity:0.6;">Name cannot be changed</small>
+                </div>
+                <div class="form-group">
+                    <label>Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" class="form-control" value="{{ current_user.email }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="phone" class="form-control" value="{{ current_user.phone or '' }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Password -->
+        <div class="settings-card">
+            <h2>🔐 Change Password</h2>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label>Current Password <span class="required">*</span></label>
+                    <input type="password" id="currentPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password <span class="required">*</span></label>
+                    <input type="password" id="newPassword" class="form-control" required minlength="8">
+                    <small style="opacity:0.6;">Minimum 8 characters, include uppercase, lowercase, number, and special
+                        character</small>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" class="form-control" required>
+                </div>
+                <div id="passwordError" style="color:var(--error); font-size:13px; display:none; margin-bottom:10px;">
+                </div>
+                <button type="submit" class="btn btn-secondary">Update Password</button>
+            </form>
+        </div>
+
+        <!-- Change PIN -->
+        <div class="settings-card">
+            <h2>🔢 Change Transaction PIN</h2>
+            <form id="pinForm">
+                <div class="form-group">
+                    <label>Current PIN <span class="required">*</span></label>
+                    <input type="password" id="currentPin" class="form-control" required maxlength="6"
+                        pattern="[0-9]{6}" placeholder="Enter 6-digit PIN">
+                </div>
+                <div class="form-group">
+                    <label>New PIN <span class="required">*</span></label>
+                    <input type="password" id="newPin" class="form-control" required maxlength="6" pattern="[0-9]{6}"
+                        placeholder="Enter 6-digit PIN">
+                </div>
+                <div class="form-group">
+                    <label>Confirm New PIN <span class="required">*</span></label>
+                    <input type="password" id="confirmPin" class="form-control" required maxlength="6"
+                        pattern="[0-9]{6}" placeholder="Confirm 6-digit PIN">
+                </div>
+                <div id="pinError" style="color:var(--error); font-size:13px; display:none; margin-bottom:10px;"></div>
+                <button type="submit" class="btn btn-secondary">Change PIN</button>
+            </form>
+        </div>
+
+        <!-- Preferences -->
+        <div class="settings-card">
+            <h2>🔔 Preferences</h2>
+            <div class="toggle-row">
+                <div class="toggle-info">
+                    <h4>Two-Factor Authentication</h4>
+                    <p>Require verification code on new devices.</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-info">
+                    <h4>Transaction Notifications</h4>
+                    <p>Get alerts for all transactions.</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-info">
+                    <h4>Login Alerts</h4>
+                    <p>Get notified when someone logs in.</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-info">
+                    <h4>Marketing Emails</h4>
+                    <p>Receive offers and updates.</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <button class="btn btn-primary" style="margin-top:20px;" onclick="savePreferences()">Save
+                Preferences</button>
+        </div>
+
+        <!-- Account Actions -->
+        <div class="settings-card">
+            <h2>⚠️ Account Actions</h2>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="window.location.href='{{ url_for('main.contact') }}'">📞
+                    Contact
+                    Support</button>
+                <button class="btn btn-secondary"
+                    onclick="if(confirm('Are you sure you want to freeze your account?')){showToast('Account frozen', 'warning')}">❄️
+                    Freeze Account</button>
+                <button class="btn btn-danger"
+                    onclick="if(confirm('Are you sure you want to close your account? This action cannot be undone.')){showToast('Account closure requested', 'info')}">🗑️
+                    Close Account</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // ============================================
+    // PROFILE UPDATE
+    // ============================================
+    document.getElementById('profileForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+
+        if (!email || !email.includes('@') || !email.includes('.')) {
+            showToast('❌ Please enter a valid email address.', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/update-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, phone })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showToast('✅ Profile updated successfully!', 'success');
+            } else {
+                showToast('❌ ' + data.error, 'error');
+            }
+        } catch (error) {
+            showToast('❌ Network error. Please try again.', 'error');
+        }
+    });
+
+    // ============================================
+    // PASSWORD UPDATE
+    // ============================================
+    document.getElementById('passwordForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const current = document.getElementById('currentPassword').value;
+        const newPass = document.getElementById('newPassword').value;
+        const confirm = document.getElementById('confirmPassword').value;
+        const errorEl = document.getElementById('passwordError');
+
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+
+        if (!current || !newPass || !confirm) {
+            errorEl.textContent = '❌ Please fill in all fields.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        if (newPass !== confirm) {
+            errorEl.textContent = '❌ Passwords do not match.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        if (newPass.length < 8) {
+            errorEl.textContent = '❌ Password must be at least 8 characters long.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_password: current, new_password: newPass })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showToast('✅ Password updated successfully!', 'success');
+                this.reset();
+            } else {
+                errorEl.textContent = '❌ ' + data.error;
+                errorEl.style.display = 'block';
+            }
+        } catch (error) {
+            showToast('❌ Network error. Please try again.', 'error');
+        }
+    });
+
+    // ============================================
+    // PIN UPDATE
+    // ============================================
+    document.getElementById('pinForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const currentPin = document.getElementById('currentPin').value;
+        const newPin = document.getElementById('newPin').value;
+        const confirmPin = document.getElementById('confirmPin').value;
+        const errorEl = document.getElementById('pinError');
+
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+
+        if (!currentPin || !newPin || !confirmPin) {
+            errorEl.textContent = '❌ Please fill in all fields.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        if (!/^\d{6}$/.test(currentPin) || !/^\d{6}$/.test(newPin) || !/^\d{6}$/.test(confirmPin)) {
+            errorEl.textContent = '❌ PIN must be exactly 6 digits.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        if (newPin !== confirmPin) {
+            errorEl.textContent = '❌ PINs do not match.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/change-pin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_pin: currentPin, new_pin: newPin, confirm_pin: confirmPin })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showToast('✅ PIN updated successfully!', 'success');
+                this.reset();
+            } else {
+                errorEl.textContent = '❌ ' + data.error;
+                errorEl.style.display = 'block';
+            }
+        } catch (error) {
+            showToast('❌ Network error. Please try again.', 'error');
+        }
+    });
+
+    // ============================================
+    // SAVE PREFERENCES
+    // ============================================
+    function savePreferences() {
+        const toggles = document.querySelectorAll('.toggle-switch input');
+        const preferences = {
+            twoFactor: toggles[0].checked,
+            transactionNotifications: toggles[1].checked,
+            loginAlerts: toggles[2].checked,
+            marketingEmails: toggles[3].checked,
+            biometric: false,
+            statementNotifications: true,
+            dataSharing: false,
+            language: 'en'
+        };
+
+        fetch('/api/save-preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(preferences)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    showToast('✅ Preferences saved successfully!', 'success');
+                } else {
+                    showToast('❌ Failed to save preferences.', 'error');
+                }
+            })
+            .catch(() => {
+                showToast('❌ Network error. Please try again.', 'error');
+            });
+    }
+</script>
+{% endblock %}

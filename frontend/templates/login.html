@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+
+{% block title %}Log On | HSBC Bank{% endblock %}
+
+{% block head %}
+<style>
+    .login-section {
+        padding: 60px 0;
+        min-height: calc(100vh - 300px);
+        display: flex;
+        align-items: center;
+        background: var(--light-grey);
+    }
+
+    .login-wrapper {
+        max-width: 480px;
+        margin: 0 auto;
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        animation: scaleIn 0.6s ease forwards;
+    }
+
+    .login-header {
+        background: var(--primary-dark-blue);
+        color: var(--primary-white);
+        padding: 35px 35px 25px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-header::before {
+        content: "🏦";
+        position: absolute;
+        font-size: 80px;
+        opacity: 0.05;
+        right: -20px;
+        bottom: -30px;
+        transform: rotate(-15deg);
+    }
+
+    .login-header h1 {
+        font-size: 28px;
+        margin-bottom: 5px;
+    }
+
+    .login-header p {
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
+    .login-header .user-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 5px;
+        color: var(--accent-gold);
+    }
+
+    .login-body {
+        padding: 35px 40px;
+    }
+
+    .security-note {
+        background: rgba(10, 127, 66, 0.05);
+        border-left: 4px solid var(--success);
+        padding: 12px 18px;
+        margin-bottom: 25px;
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        font-size: 13px;
+    }
+
+    .security-note strong {
+        color: var(--success);
+        display: block;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 14px;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        background: var(--primary-white);
+    }
+
+    .input-wrapper:focus-within {
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
+    .input-wrapper .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.5;
+        font-size: 16px;
+        z-index: 1;
+    }
+
+    .input-wrapper input {
+        width: 100%;
+        padding: 13px 15px;
+        padding-left: 45px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        transition: var(--transition);
+        background: transparent;
+        outline: none;
+    }
+
+    .input-wrapper input:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--primary-dark-blue);
+        font-size: 13px;
+        padding: 5px 8px;
+        border-radius: 4px;
+        transition: var(--transition);
+        z-index: 1;
+    }
+
+    .toggle-password:hover {
+        color: var(--accent-gold);
+        background: rgba(212, 175, 55, 0.05);
+    }
+
+    .toggle-password.active {
+        color: var(--accent-gold);
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+
+    .checkbox-group input {
+        width: auto;
+    }
+
+    .checkbox-group label {
+        font-weight: normal;
+        font-size: 13px;
+        margin-bottom: 0;
+    }
+
+    .btn-login-main {
+        width: 100%;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        padding: 15px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-login-main:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .login-links {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-light);
+        text-align: center;
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .login-links a {
+        color: var(--accent-gold);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .login-links a:hover {
+        text-decoration: underline;
+    }
+
+    .back-to-site {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: var(--dark-grey);
+        text-decoration: none;
+        opacity: 0.6;
+        font-size: 13px;
+    }
+
+    .back-to-site:hover {
+        opacity: 1;
+        color: var(--accent-gold);
+    }
+
+    .alert {
+        padding: 12px 18px;
+        border-radius: var(--radius-md);
+        margin-bottom: 20px;
+        font-size: 14px;
+        border-left: 4px solid;
+        animation: slideDown 0.3s ease;
+    }
+
+    .alert-danger {
+        background: rgba(220, 38, 38, 0.05);
+        border-color: var(--error);
+        color: var(--error);
+    }
+
+    .alert-success {
+        background: rgba(10, 127, 66, 0.05);
+        border-color: var(--success);
+        color: var(--success);
+    }
+
+    .alert-warning {
+        background: rgba(245, 158, 11, 0.05);
+        border-color: var(--warning);
+        color: var(--warning);
+    }
+
+    .user-avatar-preview {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 auto 15px;
+    }
+
+    .unified-note {
+        text-align: center;
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 10px;
+        padding: 8px;
+        background: var(--light-grey);
+        border-radius: var(--radius-md);
+    }
+
+    .unified-note span {
+        display: inline-block;
+        margin: 0 8px;
+    }
+
+    @media (max-width: 600px) {
+        .login-body {
+            padding: 25px 20px;
+        }
+
+        .login-header h1 {
+            font-size: 22px;
+        }
+
+        .login-header {
+            padding: 25px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="login-section">
+    <div class="container">
+        <div class="login-wrapper">
+            <div class="login-header">
+                <div class="user-avatar-preview">👤</div>
+                <h1>Welcome Back</h1>
+                <p>Log in to your HSBC Online Banking</p>
+                <span class="user-badge">🏦 Secure Banking</span>
+            </div>
+            <div class="login-body">
+                <div class="security-note">
+                    <strong>🔒 Security Notice</strong>
+                    Never share your password, PIN or verification codes with anyone.
+                </div>
+
+                <div class="unified-note">
+                    <span>👤 Use your username or email to login</span>
+                    <span>•</span>
+                    <span>🛡️ Please enter your password correctly.</span>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'message' else 'info' }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+
+                    <div class="form-group">
+                        <label for="username">Username or Email</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="username" name="username" required
+                                placeholder="Enter your username or email"
+                                value="{{ request.form.get('username', '') }}">
+                        </div>
+                        <div style="font-size: 12px; opacity: 0.6; margin-top: 4px;">
+                            💡 You can login with either your username or email address
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔑</span>
+                            <input type="password" id="password" name="password" required
+                                placeholder="Enter your password">
+                            <button type="button" class="toggle-password" id="togglePasswordBtn"
+                                onclick="togglePassword()">
+                                👁️ Show
+                            </button>
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me on this device</label>
+                    </div>
+
+                    <button type="submit" class="btn-login-main" id="loginButton">
+                        <span>🔐</span> <span>Log On</span>
+                    </button>
+                </form>
+
+                <div class="login-links">
+                    <a href="#">Forgot password?</a>
+                    <a href="#">Forgot username?</a>
+                    <a href="{{ url_for('auth.register') }}">New to HSBC? Create an account</a>
+                </div>
+                <a href="{{ url_for('main.index') }}" class="back-to-site">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // ============================================
+    // TOGGLE PASSWORD VISIBILITY
+    // ============================================
+    function togglePassword() {
+        const input = document.getElementById('password');
+        const btn = document.getElementById('togglePasswordBtn');
+
+        if (!input || !btn) return;
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.innerHTML = '🙈 Hide';
+            btn.classList.add('active');
+        } else {
+            input.type = 'password';
+            btn.innerHTML = '👁️ Show';
+            btn.classList.remove('active');
+        }
+    }
+
+    // ============================================
+    // KEYBOARD SHORTCUT: Ctrl+Shift+P to toggle password
+    // ============================================
+    document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && e.shiftKey && (e.key === 'p' || e.key === 'P')) {
+            e.preventDefault();
+            togglePassword();
+        }
+    });
+
+    console.log('🔐 Login page loaded. Click "Show" to reveal password or press Ctrl+Shift+P');
+</script>
+{% endblock %}

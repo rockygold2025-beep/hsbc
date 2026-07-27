@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}KYC Review | Admin{% endblock %}
+
+{% block head %}
+<style>
+    .admin-container {
+        padding: 30px 0;
+    }
+
+    .admin-header {
+        margin-bottom: 30px;
+    }
+
+    .admin-header h1 {
+        font-size: 32px;
+        color: var(--primary-dark-blue);
+    }
+
+    .admin-header .ref-badge {
+        display: inline-block;
+        background: var(--light-grey);
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary-dark-blue);
+        font-family: monospace;
+    }
+
+    .kyc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    .kyc-section {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 25px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 25px;
+    }
+
+    .kyc-section h3 {
+        color: var(--primary-dark-blue);
+        font-size: 18px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--border-light);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .kyc-section .field {
+        display: flex;
+        padding: 6px 0;
+        font-size: 14px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .kyc-section .field .label {
+        font-weight: 600;
+        min-width: 140px;
+        color: var(--dark-grey);
+        opacity: 0.7;
+    }
+
+    .kyc-section .field .value {
+        flex: 1;
+        color: var(--dark-grey);
+    }
+
+    .documents-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .doc-card {
+        background: var(--light-grey);
+        border-radius: var(--radius-md);
+        padding: 15px;
+        text-align: center;
+        transition: var(--transition);
+        border: 1px solid var(--border-light);
+    }
+
+    .doc-card:hover {
+        border-color: var(--accent-gold);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .doc-card .doc-icon {
+        font-size: 32px;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .doc-card .doc-name {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .doc-card .doc-size {
+        font-size: 11px;
+        opacity: 0.6;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-pending-review {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+    }
+
+    .status-approved {
+        background: rgba(10, 127, 66, 0.15);
+        color: var(--success);
+    }
+
+    .status-rejected {
+        background: rgba(220, 38, 38, 0.15);
+        color: var(--error);
+    }
+
+    .status-requires-more-info {
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--info);
+    }
+
+    .review-actions {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    .review-actions button {
+        flex: 1;
+        min-width: 120px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-approve-kyc {
+        background: var(--success);
+        color: white;
+    }
+
+    .btn-reject-kyc {
+        background: var(--error);
+        color: white;
+    }
+
+    .btn-more-info {
+        background: var(--info);
+        color: white;
+    }
+
+    .review-form textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        margin: 10px 0;
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    @media (max-width: 992px) {
+        .kyc-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .admin-header h1 {
+            font-size: 26px;
+        }
+
+        .kyc-section {
+            padding: 18px;
+        }
+
+        .kyc-section .field {
+            flex-direction: column;
+            padding: 8px 0;
+        }
+
+        .kyc-section .field .label {
+            min-width: auto;
+            margin-bottom: 2px;
+        }
+
+        .review-actions {
+            flex-direction: column;
+        }
+
+        .review-actions button {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set data = application.form_data|json_loads %}
+<div class="container admin-container">
+    <div class="admin-header">
+        <h1>📋 KYC Review</h1>
+        <p><span class="ref-badge">📌 {{ application.application_ref }}</span>
+            <span class="status-badge status-{{ application.kyc_status.replace('_', '-') }}"
+                style="margin-left:15px;">{{ application.kyc_status|replace('_', ' ')|title }}</span>
+        </p>
+        <p style="margin-top:5px; font-size:14px; opacity:0.6;">Submitted: {{ application.submitted_at.strftime('%d %B
+            %Y at %H:%M') }} | IP: {{ application.ip_address or 'N/A' }}</p>
+    </div>
+
+    <div class="kyc-grid">
+        <!-- Left Column -->
+        <div>
+            <div class="kyc-section">
+                <h3>👤 Personal Information</h3>
+                <div class="field"><span class="label">Title</span><span class="value">{{ data.title or 'N/A' }}</span>
+                </div>
+                <div class="field"><span class="label">Full Name</span><span class="value">{{ data.first_name }} {{
+                        data.middle_name or '' }} {{ data.last_name }}</span></div>
+                <div class="field"><span class="label">Date of Birth</span><span class="value">{{ data.date_of_birth or
+                        'N/A' }}</span></div>
+                <div class="field"><span class="label">Gender</span><span class="value">{{ data.gender or 'N/A'
+                        }}</span></div>
+                <div class="field"><span class="label">Marital Status</span><span class="value">{{ data.marital_status
+                        or 'N/A' }}</span></div>
+                <div class="field"><span class="label">Nationality</span><span class="value">{{ data.nationality or
+                        'N/A' }}</span></div>
+            </div>
+            <div class="kyc-section">
+                <h3>📍 Contact Information</h3>
+                <div class="field"><span class="label">Username</span><span class="value">{{ data.username or 'N/A'
+                        }}</span></div>
+                <div class="field"><span class="label">Email</span><span class="value">{{ data.email or 'N/A' }}</span>
+                </div>
+                <div class="field"><span class="label">Phone</span><span class="value">{{ data.phone or 'N/A' }}</span>
+                </div>
+                <div class="field"><span class="label">Address</span><span class="value">{{ data.address or 'N/A'
+                        }}</span></div>
+                <div class="field"><span class="label">City</span><span class="value">{{ data.city or 'N/A' }}</span>
+                </div>
+                <div class="field"><span class="label">Country</span><span class="value">{{ data.country_of_residence or
+                        'N/A' }}</span></div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div>
+            <div class="kyc-section">
+                <h3>🏦 Account</h3>
+                <div class="field"><span class="label">Account Type</span><span class="value">{{ data.account_type or
+                        'N/A' }}</span></div>
+                <div class="field"><span class="label">Currency</span><span class="value">{{ data.preferred_currency or
+                        'N/A' }}</span></div>
+                <div class="field"><span class="label">Branch</span><span class="value">{{ data.branch_selection or
+                        'N/A' }}</span></div>
+                <div class="field"><span class="label">Initial Deposit</span><span class="value">£{{
+                        data.initial_deposit or '0.00' }}</span></div>
+            </div>
+            <div class="kyc-section">
+                <h3>📄 Documents</h3>
+                <div class="documents-grid">
+                    {% set docs = application.documents.all() %}
+                    {% if docs %}
+                    {% for doc in docs %}
+                    <div class="doc-card">
+                        <span class="doc-icon">📄</span>
+                        <div class="doc-name">{{ doc.document_type|replace('_', ' ')|title }}</div>
+                        <div class="doc-size">{{ (doc.file_size / 1024)|round(1) }} KB</div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p style="opacity:0.6; grid-column:1/-1; text-align:center;">No documents</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="kyc-section">
+                <h3>📝 Review Actions</h3>
+                {% if application.kyc_status == 'approved' %}
+                <div
+                    style="padding:12px 15px; background:rgba(10,127,66,0.05); border-radius:var(--radius-md); border-left:4px solid var(--success); margin-bottom:15px;">
+                    <strong style="color:var(--success);">✅ Approved</strong>
+                </div>
+                {% elif application.kyc_status == 'rejected' %}
+                <div
+                    style="padding:12px 15px; background:rgba(220,38,38,0.05); border-left:4px solid var(--error); margin-bottom:15px;">
+                    <strong style="color:var(--error);">❌ Rejected</strong>
+                    <p>{{ application.rejection_reason or 'No reason' }}</p>
+                </div>
+                {% elif application.kyc_status == 'requires_more_info' %}
+                <div
+                    style="padding:12px 15px; background:rgba(59,130,246,0.05); border-left:4px solid var(--info); margin-bottom:15px;">
+                    <strong style="color:var(--info);">📋 More Info Required</strong>
+                    <p>{{ application.review_notes or 'No details' }}</p>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('admin.kyc_review', app_id=application.id) }}"
+                    class="review-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <label style="font-weight:600;">Action</label>
+                        <select name="action" id="actionSelect" onchange="toggleNotes()" required
+                            style="width:100%; padding:10px 15px; border:1px solid var(--border-light); border-radius:var(--radius-md); font-size:14px;">
+                            <option value="">Select action...</option>
+                            <option value="approve">✅ Approve</option>
+                            <option value="reject">❌ Reject</option>
+                            <option value="more_info">📋 More Info</option>
+                        </select>
+                    </div>
+                    <div id="notesField" style="display:none;">
+                        <label style="font-weight:600;">Notes / Reason</label>
+                        <textarea name="notes" id="reviewNotes" rows="3" placeholder="Enter review notes..."></textarea>
+                    </div>
+                    <div class="review-actions">
+                        <button type="submit" class="btn-approve-kyc" onclick="return confirmAction('approve')">✅
+                            Approve</button>
+                        <button type="submit" class="btn-reject-kyc" onclick="return confirmAction('reject')">❌
+                            Reject</button>
+                        <button type="submit" class="btn-more-info" onclick="return confirmAction('more_info')">📋 More
+                            Info</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleNotes() {
+        const action = document.getElementById('actionSelect').value;
+        document.getElementById('notesField').style.display = (action === 'approve') ? 'none' : 'block';
+    }
+    function confirmAction(action) {
+        const notes = document.getElementById('reviewNotes').value.trim();
+        if (action === 'reject' && !notes) { alert('Provide a rejection reason.'); return false; }
+        if (action === 'more_info' && !notes) { alert('Specify what additional information is needed.'); return false; }
+        return confirm(`Are you sure you want to ${action} this application?`);
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const status = '{{ application.kyc_status }}';
+        if (status === 'requires_more_info' || status === 'rejected') {
+            document.getElementById('actionSelect').value = status === 'requires_more_info' ? 'more_info' : 'reject';
+            toggleNotes();
+        }
+    });
+</script>
+{% endblock %}

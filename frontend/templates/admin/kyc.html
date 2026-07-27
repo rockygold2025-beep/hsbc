@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}KYC Applications | Admin{% endblock %}
+
+{% block head %}
+<style>
+    .admin-container {
+        padding: 30px 0;
+    }
+
+    .admin-header {
+        margin-bottom: 30px;
+    }
+
+    .admin-header h1 {
+        font-size: 32px;
+        color: var(--primary-dark-blue);
+    }
+
+    .filters {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .filters input,
+    .filters select,
+    .filters .btn-filter {
+        padding: 10px 18px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+    }
+
+    .section-block {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 25px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    .admin-table th {
+        text-align: left;
+        padding: 12px 10px;
+        font-weight: 600;
+        color: var(--primary-dark-blue);
+        border-bottom: 2px solid var(--border-light);
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    .admin-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-pending-review {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+    }
+
+    .status-approved {
+        background: rgba(10, 127, 66, 0.15);
+        color: var(--success);
+    }
+
+    .status-rejected {
+        background: rgba(220, 38, 38, 0.15);
+        color: var(--error);
+    }
+
+    .status-in-progress {
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--info);
+    }
+
+    .status-requires-more-info {
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--info);
+    }
+
+    .btn-sm {
+        padding: 5px 12px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-review {
+        background: var(--info);
+        color: white;
+    }
+
+    .btn-review:hover {
+        background: #2563eb;
+    }
+
+    .kyc-doc-preview {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .doc-badge {
+        background: var(--light-grey);
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+    }
+
+    .doc-badge.uploaded {
+        background: rgba(10, 127, 66, 0.1);
+        color: var(--success);
+    }
+
+    .doc-badge.missing {
+        background: rgba(220, 38, 38, 0.1);
+        color: var(--error);
+    }
+
+    @media (max-width: 768px) {
+        .filters {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container admin-container">
+    <div class="admin-header">
+        <h1>📋 KYC Applications</h1>
+        <p>Review and manage KYC applications.</p>
+    </div>
+    <div class="filters">
+        <input type="text" id="searchInput" placeholder="🔍 Search by ref, name, email..."
+            onkeyup="filterApplications()">
+        <select id="statusFilter" onchange="filterApplications()">
+            <option value="all">All Status</option>
+            <option value="pending_review">Pending Review</option>
+            <option value="in_progress">In Progress</option>
+            <option value="requires_more_info">Requires More Info</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+        </select>
+        <button class="btn-filter" onclick="filterApplications()">Filter</button>
+        <button class="btn-filter" onclick="location.reload()" style="background:var(--light-grey);">🔄 Refresh</button>
+    </div>
+    <div class="section-block">
+        <div class="section-header">
+            <h2>All KYC Applications</h2><span class="count">{{ applications|length }} total</span>
+        </div>
+        <div class="table-responsive">
+            <table class="admin-table" id="kycTable">
+                <thead>
+                    <tr>
+                        <th>Ref #</th>
+                        <th>Applicant</th>
+                        <th>Email</th>
+                        <th>Account Type</th>
+                        <th>Documents</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="kycBody">
+                    {% if applications %}
+                    {% for app in applications %}
+                    {% set data = app.form_data|json_loads %}
+                    <tr data-search="{{ app.application_ref|lower }} {{ data.first_name|lower if data else '' }} {{ data.last_name|lower if data else '' }} {{ data.email|lower if data else '' }}"
+                        data-status="{{ app.kyc_status }}">
+                        <td><strong>{{ app.application_ref }}</strong></td>
+                        <td>{{ data.first_name if data else 'N/A' }} {{ data.last_name if data else '' }}</td>
+                        <td>{{ data.email if data else 'N/A' }}</td>
+                        <td>{{ data.account_type if data else 'N/A' }}</td>
+                        <td>
+                            <div class="kyc-doc-preview">
+                                {% set docs = app.documents.all() %}
+                                {% if docs %}
+                                {% for doc in docs %}<span class="doc-badge uploaded">✅ {{
+                                    doc.document_type|replace('_', ' ')|title }}</span>{% endfor %}
+                                {% else %}<span class="doc-badge missing">No documents</span>{% endif %}
+                            </div>
+                        </td>
+                        <td>{{ app.submitted_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td><span class="status-badge status-{{ app.kyc_status.replace('_', '-') }}">{{
+                                app.kyc_status|replace('_', ' ')|title }}</span></td>
+                        <td><a href="{{ url_for('admin.kyc_review', app_id=app.id) }}" class="btn-sm btn-review">👁️
+                                Review</a></td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="empty-state">No KYC applications found</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function filterApplications() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const status = document.getElementById('statusFilter').value;
+        document.querySelectorAll('#kycBody tr').forEach(row => {
+            if (row.cells.length === 1) return;
+            const data = row.dataset.search || '';
+            const rowStatus = row.dataset.status || 'pending_review';
+            let show = true;
+            if (search && !data.includes(search)) show = false;
+            if (status !== 'all' && rowStatus !== status) show = false;
+            row.style.display = show ? '' : 'none';
+        });
+    }
+</script>
+{% endblock %}

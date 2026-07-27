@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users | Admin{% endblock %}
+
+{% block head %}
+<style>
+    .admin-container {
+        padding: 30px 0;
+    }
+
+    .admin-header {
+        margin-bottom: 30px;
+    }
+
+    .admin-header h1 {
+        font-size: 32px;
+        color: var(--primary-dark-blue);
+        margin-bottom: 5px;
+    }
+
+    .admin-header p {
+        color: var(--dark-grey);
+        opacity: 0.7;
+        font-size: 16px;
+    }
+
+    .search-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .search-bar input {
+        flex: 1;
+        min-width: 200px;
+        padding: 12px 18px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-size: 15px;
+    }
+
+    .search-bar select {
+        padding: 12px 18px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        background: white;
+        cursor: pointer;
+    }
+
+    .search-bar .btn-search {
+        padding: 12px 24px;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .section-block {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 25px;
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+        font-size: 20px;
+        color: var(--primary-dark-blue);
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    .admin-table th {
+        text-align: left;
+        padding: 12px 10px;
+        font-weight: 600;
+        color: var(--primary-dark-blue);
+        border-bottom: 2px solid var(--border-light);
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    .admin-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--border-light);
+        vertical-align: middle;
+    }
+
+    .admin-table tr:hover td {
+        background: rgba(0, 31, 91, 0.02);
+    }
+
+    .user-avatar-sm {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        margin-right: 8px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-active {
+        background: rgba(10, 127, 66, 0.15);
+        color: var(--success);
+    }
+
+    .status-inactive {
+        background: rgba(220, 38, 38, 0.15);
+        color: var(--error);
+    }
+
+    .status-verified {
+        background: rgba(10, 127, 66, 0.10);
+        color: var(--success);
+    }
+
+    .status-unverified {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+    }
+
+    .btn-sm {
+        padding: 5px 12px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        margin: 2px;
+    }
+
+    .btn-topup {
+        background: var(--success);
+        color: white;
+    }
+
+    .btn-freeze {
+        background: var(--warning);
+        color: white;
+    }
+
+    .btn-unfreeze {
+        background: var(--info);
+        color: white;
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 35px;
+        max-width: 450px;
+        width: 90%;
+        box-shadow: var(--shadow-xl);
+    }
+
+    @media (max-width: 600px) {
+        .search-bar {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container admin-container">
+    <div class="admin-header">
+        <h1>👥 Manage Users</h1>
+        <p>View and manage all registered users on the platform.</p>
+    </div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Search by username or email..." onkeyup="filterUsers()">
+        <select id="statusFilter" onchange="filterUsers()">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
+        <button class="btn-search" onclick="filterUsers()">Search</button>
+    </div>
+    <div class="section-block">
+        <div class="section-header">
+            <h2>Registered Users</h2>
+            <span class="user-count">{{ users|length }} total users</span>
+        </div>
+        <div class="table-responsive">
+            <table class="admin-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Account #</th>
+                        <th>Balance</th>
+                        <th>Status</th>
+                        <th>Verified</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersBody">
+                    {% if users %}
+                    {% for user in users %}
+                    <tr data-user-id="{{ user.id }}" data-search="{{ user.username|lower }} {{ user.email|lower }}"
+                        data-status="{{ 'active' if user.is_active else 'inactive' }}"
+                        data-verified="{{ 'verified' if user.is_verified else 'unverified' }}">
+                        <td><span class="user-avatar-sm">{{ user.username[0].upper() }}</span>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.account_number or 'N/A' }}</td>
+                        <td class="user-balance"><strong>£{{ "%.2f"|format(user.balance) }}</strong></td>
+                        <td><span class="status-badge status-{{ 'active' if user.is_active else 'inactive' }}">{{
+                                'Active' if user.is_active else 'Inactive' }}</span></td>
+                        <td><span class="status-badge status-{{ 'verified' if user.is_verified else 'unverified' }}">{{
+                                '✅ Verified' if user.is_verified else '⏳ Pending' }}</span></td>
+                        <td>{{ user.created_at.strftime('%d/%m/%Y') if user.created_at else '-' }}</td>
+                        <td>
+                            <button class="btn-sm btn-topup"
+                                onclick="openTopupModal({{ user.id }}, '{{ user.username }}')">💰 Top Up</button>
+                            {% if user.is_active %}
+                            <button class="btn-sm btn-freeze" onclick="freezeUser({{ user.id }})">❄️ Freeze</button>
+                            {% else %}
+                            <button class="btn-sm btn-unfreeze" onclick="unfreezeUser({{ user.id }})">🔓
+                                Unfreeze</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="empty-state">No users found</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Topup Modal -->
+<div class="modal-overlay" id="topupModal">
+    <div class="modal-content">
+        <h2>💰 Top Up User</h2>
+        <p>Add funds to <strong id="topupUsername">User</strong>'s account.</p>
+        <div class="form-group"><label>Amount (£)</label><input type="number" id="topupAmount" step="0.01" min="0.01"
+                required></div>
+        <div class="form-group"><label>Description</label><input type="text" id="topupDescription" placeholder="Reason">
+        </div>
+        <div id="topupMessage"></div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeTopup()">Cancel</button>
+            <button class="btn-confirm" onclick="submitTopup()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedUserId = null;
+    function openTopupModal(id, name) {
+        selectedUserId = id;
+        document.getElementById('topupUsername').textContent = name;
+        document.getElementById('topupAmount').value = '';
+        document.getElementById('topupDescription').value = '';
+        document.getElementById('topupMessage').innerHTML = '';
+        document.getElementById('topupModal').classList.add('active');
+    }
+    function closeTopup() { document.getElementById('topupModal').classList.remove('active'); }
+    async function submitTopup() {
+        const amount = document.getElementById('topupAmount').value;
+        const desc = document.getElementById('topupDescription').value;
+        const msg = document.getElementById('topupMessage');
+        if (!amount || parseFloat(amount) <= 0) { msg.innerHTML = '<div style="color:var(--error);">❌ Enter valid amount</div>'; return; }
+        msg.innerHTML = '<div style="color:var(--info);">⏳ Processing...</div>';
+        try {
+            const resp = await fetch('/api/admin/topup', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: selectedUserId, amount: parseFloat(amount), description: desc || 'Admin top up' })
+            });
+            const data = await resp.json();
+            if (resp.ok) {
+                msg.innerHTML = `<div style="color:var(--success);">✅ ${data.message}</div>`;
+                showToast('✅ ' + data.message, 'success');
+                updateUserBalance(selectedUserId, data.new_balance);
+                setTimeout(closeTopup, 1500);
+            } else msg.innerHTML = `<div style="color:var(--error);">❌ ${data.error}</div>`;
+        } catch (e) { msg.innerHTML = '<div style="color:var(--error);">❌ Network error</div>'; }
+    }
+    function updateUserBalance(userId, newBalance) {
+        document.querySelectorAll('#usersBody tr').forEach(row => {
+            if (row.dataset.userId == userId) {
+                row.querySelector('.user-balance').innerHTML = '<strong>£' + newBalance.toFixed(2) + '</strong>';
+            }
+        });
+    }
+    async function freezeUser(id) {
+        if (!confirm('Freeze this account?')) return;
+        try {
+            const resp = await fetch(`/api/admin/freeze-user/${id}`, { method: 'POST' });
+            const data = await resp.json();
+            showToast(resp.ok ? '✅ ' + data.message : '❌ ' + data.error, resp.ok ? 'success' : 'error');
+            if (resp.ok) setTimeout(() => location.reload(), 1000);
+        } catch (e) { showToast('❌ Network error', 'error'); }
+    }
+    async function unfreezeUser(id) {
+        if (!confirm('Unfreeze this account?')) return;
+        try {
+            const resp = await fetch(`/api/admin/unfreeze-user/${id}`, { method: 'POST' });
+            const data = await resp.json();
+            showToast(resp.ok ? '✅ ' + data.message : '❌ ' + data.error, resp.ok ? 'success' : 'error');
+            if (resp.ok) setTimeout(() => location.reload(), 1000);
+        } catch (e) { showToast('❌ Network error', 'error'); }
+    }
+    function filterUsers() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const status = document.getElementById('statusFilter').value;
+        document.querySelectorAll('#usersBody tr').forEach(row => {
+            if (row.cells.length === 1) return;
+            const data = row.dataset.search || '';
+            const rowStatus = row.dataset.status || 'active';
+            let show = true;
+            if (search && !data.includes(search)) show = false;
+            if (status !== 'all' && rowStatus !== status) show = false;
+            row.style.display = show ? '' : 'none';
+        });
+    }
+    document.getElementById('topupModal').addEventListener('click', function (e) { if (e.target === this) closeTopup(); });
+</script>
+{% endblock %}

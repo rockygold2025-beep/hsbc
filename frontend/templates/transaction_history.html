@@ -1,0 +1,804 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History | HSBC Bank{% endblock %}
+
+{% block head %}
+<style>
+    /* ============================================
+       HERO SECTION
+    ============================================ */
+    .history-hero {
+        background: linear-gradient(135deg, #001F5B 0%, #00337C 50%, #004A9E 100%);
+        color: var(--primary-white);
+        padding: 50px 0 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .history-hero::before {
+        content: '📊';
+        position: absolute;
+        right: -50px;
+        bottom: -50px;
+        font-size: 200px;
+        opacity: 0.05;
+    }
+
+    .history-hero h1 {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 8px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .history-hero p {
+        font-size: 16px;
+        opacity: 0.85;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ============================================
+       SUMMARY CARDS
+    ============================================ */
+    .summary-section {
+        padding: 30px 0;
+        background: var(--light-grey);
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .summary-card {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 20px 25px;
+        box-shadow: var(--shadow-sm);
+        border-left: 4px solid var(--accent-gold);
+        transition: var(--transition);
+    }
+
+    .summary-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .summary-card .summary-label {
+        font-size: 13px;
+        opacity: 0.7;
+        font-weight: 500;
+        margin-bottom: 3px;
+    }
+
+    .summary-card .summary-value {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary-dark-blue);
+    }
+
+    .summary-card .summary-value.positive {
+        color: var(--success);
+    }
+
+    .summary-card .summary-value.negative {
+        color: var(--error);
+    }
+
+    .summary-card.info {
+        border-left-color: var(--info);
+    }
+
+    .summary-card.success {
+        border-left-color: var(--success);
+    }
+
+    .summary-card.warning {
+        border-left-color: var(--warning);
+    }
+
+    .summary-card.danger {
+        border-left-color: var(--error);
+    }
+
+    /* ============================================
+       FILTERS SECTION
+    ============================================ */
+    .filters-section {
+        padding: 25px 0;
+        background: var(--primary-white);
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .filters-wrapper {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .filters-wrapper .filter-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        flex: 1;
+    }
+
+    .filters-wrapper select,
+    .filters-wrapper input {
+        padding: 10px 15px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        background: white;
+        transition: var(--transition);
+        min-width: 150px;
+    }
+
+    .filters-wrapper select:focus,
+    .filters-wrapper input:focus {
+        border-color: var(--accent-gold);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
+    .filters-wrapper .btn-filter {
+        padding: 10px 24px;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filters-wrapper .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .filters-wrapper .btn-reset {
+        padding: 10px 24px;
+        background: var(--light-grey);
+        color: var(--dark-grey);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filters-wrapper .btn-reset:hover {
+        background: var(--border-light);
+    }
+
+    /* ============================================
+       TRANSACTIONS TABLE
+    ============================================ */
+    .transactions-section {
+        padding: 30px 0 50px;
+        background: var(--light-grey);
+    }
+
+    .transactions-wrapper {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 25px;
+        overflow: hidden;
+    }
+
+    .transactions-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .transactions-header h2 {
+        font-size: 20px;
+        color: var(--primary-dark-blue);
+    }
+
+    .transactions-header .count {
+        font-size: 14px;
+        opacity: 0.7;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .transaction-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    .transaction-table th {
+        text-align: left;
+        padding: 12px 10px;
+        font-weight: 600;
+        color: var(--primary-dark-blue);
+        border-bottom: 2px solid var(--border-light);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+    .transaction-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--border-light);
+        vertical-align: middle;
+    }
+
+    .transaction-table tr:hover td {
+        background: rgba(0, 31, 91, 0.02);
+    }
+
+    .transaction-table .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        opacity: 0.6;
+    }
+
+    .transaction-table .empty-state .empty-icon {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+    }
+
+    .status-approved {
+        background: rgba(10, 127, 66, 0.15);
+        color: var(--success);
+    }
+
+    .status-rejected {
+        background: rgba(220, 38, 38, 0.15);
+        color: var(--error);
+    }
+
+    /* Amount Colors */
+    .amount-out {
+        color: var(--error);
+        font-weight: 600;
+    }
+
+    .amount-in {
+        color: var(--success);
+        font-weight: 600;
+    }
+
+    /* Type Badge */
+    .type-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .type-local {
+        background: rgba(0, 31, 91, 0.08);
+        color: var(--primary-dark-blue);
+    }
+
+    .type-international {
+        background: rgba(59, 130, 246, 0.12);
+        color: var(--info);
+    }
+
+    /* ============================================
+       PAGINATION
+    ============================================ */
+    .pagination-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .pagination-wrapper .pagination-info {
+        font-size: 14px;
+        opacity: 0.7;
+    }
+
+    .pagination-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .pagination-buttons button {
+        padding: 8px 16px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        background: white;
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 600;
+        font-size: 13px;
+        min-width: 40px;
+    }
+
+    .pagination-buttons button:hover:not(:disabled) {
+        border-color: var(--accent-gold);
+        background: rgba(212, 175, 55, 0.05);
+    }
+
+    .pagination-buttons button.active {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border-color: var(--accent-gold);
+    }
+
+    .pagination-buttons button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 992px) {
+        .history-hero h1 {
+            font-size: 30px;
+        }
+
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filters-wrapper {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filters-wrapper .filter-group {
+            flex-direction: column;
+        }
+
+        .filters-wrapper select,
+        .filters-wrapper input,
+        .filters-wrapper .btn-filter,
+        .filters-wrapper .btn-reset {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .history-hero h1 {
+            font-size: 26px;
+        }
+
+        .history-hero p {
+            font-size: 14px;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .transactions-wrapper {
+            padding: 15px;
+        }
+
+        .transactions-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .pagination-wrapper {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .transaction-table {
+            font-size: 13px;
+        }
+
+        .transaction-table th,
+        .transaction-table td {
+            padding: 8px 6px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .history-hero h1 {
+            font-size: 22px;
+        }
+
+        .summary-card .summary-value {
+            font-size: 20px;
+        }
+
+        .transaction-table th,
+        .transaction-table td {
+            padding: 6px 4px;
+            font-size: 12px;
+        }
+
+        .pagination-buttons button {
+            padding: 6px 12px;
+            font-size: 12px;
+            min-width: 32px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ============================================
+HERO SECTION
+============================================ -->
+<section class="history-hero animate-fade-in-down">
+    <div class="container">
+        <h1>📊 Transaction History</h1>
+        <p>View and manage all your transactions in one place.</p>
+    </div>
+</section>
+
+<!-- ============================================
+SUMMARY CARDS
+============================================ -->
+<section class="summary-section">
+    <div class="container">
+        <div class="summary-grid">
+            <div class="summary-card animate-fade-in-up delay-1">
+                <div class="summary-label">Total Balance</div>
+                <div class="summary-value" id="totalBalance">£{{ "%.2f"|format(current_user.balance) }}</div>
+            </div>
+            <div class="summary-card info animate-fade-in-up delay-2">
+                <div class="summary-label">Total Transactions</div>
+                <div class="summary-value" id="totalCount">{{ transactions|length }}</div>
+            </div>
+            <div class="summary-card success animate-fade-in-up delay-3">
+                <div class="summary-label">Total Received</div>
+                <div class="summary-value positive" id="totalReceived">
+                    {% set received = transactions|selectattr('receiver_id', 'equalto',
+                    current_user.id)|selectattr('status', 'equalto', 'approved')|list %}
+                    £{{ "%.2f"|format(received|sum(attribute='amount')) }}
+                </div>
+            </div>
+            <div class="summary-card danger animate-fade-in-up delay-4">
+                <div class="summary-label">Total Sent</div>
+                <div class="summary-value negative" id="totalSent">
+                    {% set sent = transactions|selectattr('sender_id', 'equalto', current_user.id)|selectattr('status',
+                    'equalto', 'approved')|list %}
+                    £{{ "%.2f"|format(sent|sum(attribute='amount')) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+FILTERS
+============================================ -->
+<section class="filters-section">
+    <div class="container">
+        <div class="filters-wrapper">
+            <div class="filter-group">
+                <select id="typeFilter" onchange="applyFilters()">
+                    <option value="all">All Types</option>
+                    <option value="local">🇬🇧 Local Transfers</option>
+                    <option value="international">🌍 International Transfers</option>
+                </select>
+                <select id="statusFilter" onchange="applyFilters()">
+                    <option value="all">All Status</option>
+                    <option value="pending">⏳ Pending</option>
+                    <option value="approved">✅ Approved</option>
+                    <option value="rejected">❌ Rejected</option>
+                </select>
+                <input type="date" id="dateFrom" onchange="applyFilters()" placeholder="From">
+                <input type="date" id="dateTo" onchange="applyFilters()" placeholder="To">
+            </div>
+            <div>
+                <button class="btn-filter" onclick="applyFilters()">🔍 Apply Filters</button>
+                <button class="btn-reset" onclick="resetFilters()">↺ Reset</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+TRANSACTIONS TABLE
+============================================ -->
+<section class="transactions-section">
+    <div class="container">
+        <div class="transactions-wrapper animate-fade-in-up">
+            <div class="transactions-header">
+                <h2>All Transactions</h2>
+                <span class="count" id="transactionCount">{{ transactions|length }} transactions</span>
+            </div>
+            <div class="table-responsive">
+                <table class="transaction-table" id="transactionTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionBody">
+                        {% if transactions %}
+                        {% for t in transactions %}
+                        <tr data-type="{{ t.transaction_type or 'local' }}" data-status="{{ t.status }}"
+                            data-date="{{ t.created_at.strftime('%Y-%m-%d') }}" data-amount="{{ t.amount }}">
+                            <td>{{ t.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                {% if t.transaction_type == 'international' %}
+                                <span class="type-badge type-international">🌍 International</span>
+                                {% else %}
+                                <span class="type-badge type-local">🇬🇧 Local</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if t.sender %}
+                                {{ t.sender.username }}
+                                {% else %}
+                                System
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if t.receiver %}
+                                {{ t.receiver.username }}
+                                {% else %}
+                                International Transfer
+                                {% endif %}
+                            </td>
+                            <td class="{% if t.sender_id == current_user.id %}amount-out{% else %}amount-in{% endif %}">
+                                {% if t.sender_id == current_user.id %}-{% endif %}£{{ "%.2f"|format(t.amount) }}
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ t.status }}">
+                                    {{ t.status }}
+                                </span>
+                            </td>
+                            <td>{{ t.description|truncate(35) if t.description else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <span class="empty-icon">📭</span>
+                                No transactions found
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper" id="paginationWrapper">
+                <span class="pagination-info" id="pageInfo">Showing 1-10 of 0 transactions</span>
+                <div class="pagination-buttons" id="paginationButtons">
+                    <button onclick="changePage('prev')" id="prevPage" disabled>←</button>
+                    <span id="pageNumbers"></span>
+                    <button onclick="changePage('next')" id="nextPage" disabled>→</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // ============================================
+    // PAGINATION
+    // ============================================
+    let currentPage = 1;
+    const perPage = 10;
+    let filteredRows = [];
+    let allRows = [];
+
+    function initPagination() {
+        const rows = document.querySelectorAll('#transactionBody tr');
+        allRows = Array.from(rows).filter(row => row.cells.length > 1);
+        filteredRows = [...allRows];
+        updatePagination();
+    }
+
+    function updatePagination() {
+        const totalItems = filteredRows.length;
+        const totalPages = Math.ceil(totalItems / perPage) || 1;
+        const start = (currentPage - 1) * perPage;
+        const end = Math.min(start + perPage, totalItems);
+
+        // Hide all rows
+        document.querySelectorAll('#transactionBody tr').forEach(row => {
+            if (row.cells.length > 1) {
+                row.style.display = 'none';
+            }
+        });
+
+        // Show current page rows
+        const pageRows = filteredRows.slice(start, end);
+        pageRows.forEach(row => {
+            row.style.display = '';
+        });
+
+        // Update page info
+        document.getElementById('pageInfo').textContent =
+            totalItems > 0 ? `Showing ${start + 1}-${end} of ${totalItems} transactions` : 'No transactions';
+
+        // Update buttons
+        document.getElementById('prevPage').disabled = currentPage <= 1;
+        document.getElementById('nextPage').disabled = currentPage >= totalPages;
+
+        // Update page numbers
+        const pageNumbers = document.getElementById('pageNumbers');
+        pageNumbers.innerHTML = '';
+
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+
+        if (startPage > 1) {
+            const btn = document.createElement('button');
+            btn.textContent = '1';
+            btn.onclick = () => goToPage(1);
+            pageNumbers.appendChild(btn);
+            if (startPage > 2) {
+                const dots = document.createElement('span');
+                dots.textContent = '…';
+                dots.style.padding = '0 5px';
+                pageNumbers.appendChild(dots);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.className = i === currentPage ? 'active' : '';
+            btn.onclick = () => goToPage(i);
+            pageNumbers.appendChild(btn);
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const dots = document.createElement('span');
+                dots.textContent = '…';
+                dots.style.padding = '0 5px';
+                pageNumbers.appendChild(dots);
+            }
+            const btn = document.createElement('button');
+            btn.textContent = totalPages;
+            btn.onclick = () => goToPage(totalPages);
+            pageNumbers.appendChild(btn);
+        }
+
+        // Update transaction count
+        document.getElementById('transactionCount').textContent = totalItems + ' transactions';
+    }
+
+    function goToPage(page) {
+        const totalPages = Math.ceil(filteredRows.length / perPage) || 1;
+        if (page < 1 || page > totalPages) return;
+        currentPage = page;
+        updatePagination();
+        document.querySelector('.transactions-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function changePage(direction) {
+        const totalPages = Math.ceil(filteredRows.length / perPage) || 1;
+        if (direction === 'prev' && currentPage > 1) {
+            goToPage(currentPage - 1);
+        } else if (direction === 'next' && currentPage < totalPages) {
+            goToPage(currentPage + 1);
+        }
+    }
+
+    // ============================================
+    // FILTERS
+    // ============================================
+    function applyFilters() {
+        const typeFilter = document.getElementById('typeFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const dateFrom = document.getElementById('dateFrom').value;
+        const dateTo = document.getElementById('dateTo').value;
+
+        filteredRows = allRows.filter(row => {
+            if (row.cells.length === 1) return false;
+
+            const type = row.dataset.type || 'local';
+            const status = row.dataset.status || 'pending';
+            const date = row.dataset.date || '';
+
+            let show = true;
+            if (typeFilter !== 'all' && type !== typeFilter) show = false;
+            if (statusFilter !== 'all' && status !== statusFilter) show = false;
+            if (dateFrom && date < dateFrom) show = false;
+            if (dateTo && date > dateTo) show = false;
+
+            return show;
+        });
+
+        currentPage = 1;
+        updatePagination();
+
+        // Update counts if no results
+        if (filteredRows.length === 0) {
+            document.querySelector('#transactionBody').innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-state">
+                    <span class="empty-icon">🔍</span>
+                    No transactions match your filters
+                </td>
+            </tr>
+        `;
+            // Re-initialize rows
+            allRows = [];
+            filteredRows = [];
+        }
+    }
+
+    function resetFilters() {
+        document.getElementById('typeFilter').value = 'all';
+        document.getElementById('statusFilter').value = 'all';
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value = '';
+
+        // Restore all rows
+        const rows = document.querySelectorAll('#transactionBody tr');
+        allRows = Array.from(rows).filter(row => row.cells.length > 1);
+        filteredRows = [...allRows];
+        currentPage = 1;
+        updatePagination();
+    }
+
+    // ============================================
+    // UPDATE BALANCE
+    // ============================================
+    async function updateBalance() {
+        try {
+            const response = await fetch('{{ url_for("api.get_balance") }}');
+            const data = await response.json();
+            if (data.balance !== undefined) {
+                document.getElementById('totalBalance').textContent = '£' + data.balance.toFixed(2);
+            }
+        } catch (e) {
+            console.error('Failed to update balance:', e);
+        }
+    }
+
+    // Update balance every 30 seconds
+    setInterval(updateBalance, 30000);
+
+    // ============================================
+    // INITIALIZE
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function () {
+        initPagination();
+    });
+</script>
+{% endblock %}

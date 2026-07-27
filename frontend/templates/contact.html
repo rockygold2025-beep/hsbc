@@ -1,0 +1,653 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us | HSBC Bank{% endblock %}
+
+{% block head %}
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, #001F5B 0%, #00337C 50%, #004A9E 100%);
+        color: var(--primary-white);
+        padding: 60px 0 50px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .contact-hero::before {
+        content: '📞';
+        position: absolute;
+        right: -50px;
+        bottom: -50px;
+        font-size: 200px;
+        opacity: 0.05;
+    }
+
+    .contact-hero h1 {
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .contact-hero p {
+        font-size: 18px;
+        opacity: 0.85;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+        line-height: 1.7;
+    }
+
+    .contact-methods {
+        padding: 60px 0;
+        background: var(--light-grey);
+    }
+
+    .methods-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+    }
+
+    .method-card {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 30px 25px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        border: 1px solid var(--border-light);
+    }
+
+    .method-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--accent-gold);
+    }
+
+    .method-card .method-icon {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    .method-card h3 {
+        color: var(--primary-dark-blue);
+        font-size: 18px;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .method-card .method-detail {
+        font-size: 15px;
+        opacity: 0.8;
+        margin-bottom: 5px;
+    }
+
+    .method-card .method-note {
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 8px;
+    }
+
+    .contact-form-section {
+        padding: 60px 0;
+        background: var(--primary-white);
+    }
+
+    .form-wrapper {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 40px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .form-wrapper h2 {
+        font-size: 28px;
+        color: var(--primary-dark-blue);
+        text-align: center;
+        margin-bottom: 8px;
+        font-weight: 800;
+    }
+
+    .form-wrapper .form-subtitle {
+        text-align: center;
+        font-size: 15px;
+        opacity: 0.7;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 14px;
+        color: var(--dark-grey);
+    }
+
+    .form-group label .required {
+        color: var(--error);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        transition: var(--transition);
+        background: var(--primary-white);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
+    .form-group .hint {
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 4px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        padding: 15px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .msg-box {
+        padding: 14px 18px;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        margin: 15px 0;
+        display: none;
+        border-left: 4px solid;
+    }
+
+    .msg-success {
+        background: rgba(10, 127, 66, 0.05);
+        color: var(--success);
+        border-color: var(--success);
+        display: block;
+    }
+
+    .msg-error {
+        background: rgba(220, 38, 38, 0.05);
+        color: var(--error);
+        border-color: var(--error);
+        display: block;
+    }
+
+    .location-section {
+        padding: 60px 0;
+        background: var(--light-grey);
+    }
+
+    .location-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .location-info h2 {
+        font-size: 30px;
+        color: var(--primary-dark-blue);
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .location-info p {
+        font-size: 16px;
+        opacity: 0.8;
+        line-height: 1.7;
+        margin-bottom: 20px;
+    }
+
+    .location-details {
+        list-style: none;
+        padding: 0;
+    }
+
+    .location-details li {
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .location-details .icon {
+        font-size: 20px;
+        min-width: 30px;
+    }
+
+    .location-map {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        text-align: center;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .location-map .map-placeholder {
+        font-size: 80px;
+        opacity: 0.3;
+        display: block;
+    }
+
+    .location-map .map-text {
+        font-size: 14px;
+        opacity: 0.6;
+        margin-top: 10px;
+    }
+
+    .faq-preview {
+        padding: 60px 0;
+        background: var(--primary-white);
+    }
+
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .faq-item {
+        background: var(--light-grey);
+        border-radius: var(--radius-md);
+        padding: 18px 22px;
+        border-left: 4px solid var(--accent-gold);
+    }
+
+    .faq-item h4 {
+        color: var(--primary-dark-blue);
+        font-size: 15px;
+        margin-bottom: 4px;
+    }
+
+    .faq-item p {
+        font-size: 13px;
+        opacity: 0.7;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 992px) {
+        .location-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .contact-hero h1 {
+            font-size: 34px;
+        }
+
+        .form-wrapper {
+            padding: 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .contact-hero h1 {
+            font-size: 28px;
+        }
+
+        .contact-hero p {
+            font-size: 16px;
+        }
+
+        .form-wrapper {
+            padding: 20px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .methods-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .location-info h2 {
+            font-size: 24px;
+        }
+
+        .faq-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .contact-hero h1 {
+            font-size: 24px;
+        }
+
+        .methods-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .method-card {
+            padding: 20px;
+        }
+
+        .form-wrapper {
+            padding: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="contact-hero animate-fade-in-down">
+    <div class="container">
+        <h1>Get in Touch</h1>
+        <p>We're here to help. Contact us through any of the channels below or fill out our contact form.</p>
+    </div>
+</section>
+
+<section class="contact-methods">
+    <div class="container">
+        <div class="methods-grid">
+            <div class="method-card animate-fade-in-up delay-1">
+                <span class="method-icon">📞</span>
+                <h3>Phone Support</h3>
+                <div class="method-detail"><strong>UK:</strong> 03457 404 404</div>
+                <div class="method-detail"><strong>International:</strong> <strong>+44 7365 560085</strong></div>
+                <div class="method-note">Available 24/7 for customer support</div>
+            </div>
+
+            <div class="method-card animate-fade-in-up delay-2">
+                <span class="method-icon">📧</span>
+                <h3>Email Support</h3>
+                <div class="method-detail"><strong>hsbcbankplc050@gmail.com</strong></div>
+                <div class="method-note">We respond within 24 hours</div>
+            </div>
+
+            <div class="method-card animate-fade-in-up delay-3">
+                <span class="method-icon">💬</span>
+                <h3>Live Chat</h3>
+                <div class="method-detail">Chat with our support team</div>
+                <div class="method-detail">Available 24/7</div>
+                <button class="btn btn-primary btn-sm" onclick="openLiveChat()" style="margin-top:10px;">
+                    💬 Start Chat
+                </button>
+            </div>
+
+            <div class="method-card animate-fade-in-up delay-4">
+                <span class="method-icon">📍</span>
+                <h3>Visit a Branch</h3>
+                <div class="method-detail">8 Canada Square</div>
+                <div class="method-detail">London, E14 5HQ</div>
+                <div class="method-note">Mon-Fri: 9am - 5pm</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-form-section">
+    <div class="container">
+        <div class="form-wrapper animate-scale-in">
+            <h2>Send Us a Message</h2>
+            <p class="form-subtitle">Fill in the form below and we'll get back to you as soon as possible.</p>
+
+            <div id="messageContainer">
+                <div class="msg-box" id="msgBox"></div>
+            </div>
+
+            <form id="contactForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name <span class="required">*</span></label>
+                        <input type="text" name="name" id="contactName" class="form-control" required
+                            placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address <span class="required">*</span></label>
+                        <input type="email" name="email" id="contactEmail" class="form-control" required
+                            placeholder="Enter your email address">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="phone" id="contactPhone" class="form-control"
+                            placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-group">
+                        <label>Subject <span class="required">*</span></label>
+                        <select name="subject" id="contactSubject" class="form-control" required>
+                            <option value="">Select a subject...</option>
+                            <option value="General Inquiry">General Inquiry</option>
+                            <option value="Account Support">Account Support</option>
+                            <option value="Technical Issue">Technical Issue</option>
+                            <option value="Complaint">Complaint</option>
+                            <option value="Feedback">Feedback</option>
+                            <option value="International Transfer Help">International Transfer Help</option>
+                            <option value="Verification Code Help">Verification Code Help</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Message <span class="required">*</span></label>
+                    <textarea name="message" id="contactMessage" class="form-control" rows="5" required
+                        placeholder="Please describe your issue or inquiry in detail..."></textarea>
+                    <div class="hint">Please provide as much detail as possible so we can assist you better.</div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span>📤</span> Send Message
+                </button>
+            </form>
+
+            <div id="resultContainer" style="display:none; margin-top:20px;">
+                <div class="msg-box msg-success" id="resultMessage"></div>
+                <button class="btn-submit" style="margin-top:10px;" onclick="location.reload()">Send Another
+                    Message</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="location-section">
+    <div class="container">
+        <div class="location-grid">
+            <div class="location-info animate-fade-in-up delay-1">
+                <h2>📍 Visit Our Headquarters</h2>
+                <p>HSBC's global headquarters is located in the heart of London's Canary Wharf financial district. We
+                    welcome visitors by appointment.</p>
+                <ul class="location-details">
+                    <li>
+                        <span class="icon">🏢</span>
+                        <span><strong>Address:</strong> 8 Canada Square, London, E14 5HQ, United Kingdom</span>
+                    </li>
+                    <li>
+                        <span class="icon">📞</span>
+                        <span><strong>Phone:</strong> +44 7365 560085</span>
+                    </li>
+                    <li>
+                        <span class="icon">📧</span>
+                        <span><strong>Email:</strong> hsbcbankplc050@gmail.com</span>
+                    </li>
+                    <li>
+                        <span class="icon">⏰</span>
+                        <span><strong>Opening Hours:</strong> Monday - Friday, 9:00 AM - 5:00 PM</span>
+                    </li>
+                    <li>
+                        <span class="icon">🚇</span>
+                        <span><strong>Nearest Tube:</strong> Canary Wharf (Jubilee Line) | Heron Quays (DLR)</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="location-map animate-fade-in-up delay-2">
+                <span class="map-placeholder">🗺️</span>
+                <div
+                    style="background: var(--light-grey); border-radius: var(--radius-md); padding: 20px; width: 100%; margin-top: 10px;">
+                    <p style="font-size: 14px; font-weight: 600; color: var(--primary-dark-blue);">📍 8 Canada Square
+                    </p>
+                    <p style="font-size: 13px; opacity: 0.6;">London, E14 5HQ</p>
+                    <p style="font-size: 12px; opacity: 0.5; margin-top: 10px;">Interactive map coming soon</p>
+                </div>
+                <div class="map-text">
+                    <a href="https://www.google.com/maps/place/8+Canada+Square,+London+E14+5HQ" target="_blank"
+                        style="color: var(--accent-gold); font-weight: 600; text-decoration: none;">
+                        View on Google Maps →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="faq-preview">
+    <div class="container">
+        <div class="section-header animate-fade-in-up" style="margin-bottom: 30px; text-align:center;">
+            <h2 style="font-size: 28px; color: var(--primary-dark-blue);">Quick Answers</h2>
+            <p style="font-size: 15px; opacity: 0.7;">Find answers to common questions before contacting us.</p>
+        </div>
+        <div class="faq-grid">
+            <div class="faq-item animate-fade-in-up delay-1">
+                <h4>❓ How do I reset my password?</h4>
+                <p>Go to the login page and click "Forgot Password". Follow the instructions sent to your email.</p>
+            </div>
+            <div class="faq-item animate-fade-in-up delay-2">
+                <h4>❓ How do I make a transfer?</h4>
+                <p>Go to the Payments section, enter recipient details, amount, and confirm with your PIN.</p>
+            </div>
+            <div class="faq-item animate-fade-in-up delay-3">
+                <h4>❓ Is my money protected?</h4>
+                <p>Yes! Your eligible deposits are protected by FSCS up to £85,000 per person.</p>
+            </div>
+            <div class="faq-item animate-fade-in-up delay-4">
+                <h4>❓ How do I contact support?</h4>
+                <p>Use the contact form above, call us at +44 7365 560085, or visit your nearest branch.</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 25px;">
+            <a href="{{ url_for('main.faq') }}"
+                style="color: var(--accent-gold); font-weight: 600; text-decoration: none;">
+                View All FAQs →
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+    function openLiveChat() {
+        if (typeof smartsupp !== 'undefined') {
+            smartsupp('chat:open');
+            showToast('💬 Live chat opened!', 'info');
+        } else {
+            showToast('💬 Live chat is loading. Please wait a moment and try again.', 'info');
+        }
+    }
+
+    document.getElementById('contactForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const msgBox = document.getElementById('msgBox');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultMessage = document.getElementById('resultMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        msgBox.className = 'msg-box';
+        msgBox.style.display = 'none';
+        resultContainer.style.display = 'none';
+
+        const name = document.getElementById('contactName').value.trim();
+        const email = document.getElementById('contactEmail').value.trim();
+        const phone = document.getElementById('contactPhone').value.trim();
+        const subject = document.getElementById('contactSubject').value;
+        const message = document.getElementById('contactMessage').value.trim();
+
+        if (!name || !email || !subject || !message) {
+            msgBox.textContent = 'Please fill in all required fields.';
+            msgBox.className = 'msg-box msg-error';
+            msgBox.style.display = 'block';
+            return;
+        }
+
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(email)) {
+            msgBox.textContent = 'Please enter a valid email address.';
+            msgBox.className = 'msg-box msg-error';
+            msgBox.style.display = 'block';
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Sending...';
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>📤</span> Send Message';
+
+            resultContainer.style.display = 'block';
+            resultMessage.textContent = '✅ Your message has been sent successfully! We\'ll get back to you within 24 hours.';
+            this.reset();
+
+            showToast('✅ Message sent successfully!', 'success');
+
+        } catch (error) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>📤</span> Send Message';
+            msgBox.textContent = '❌ Something went wrong. Please try again later.';
+            msgBox.className = 'msg-box msg-error';
+            msgBox.style.display = 'block';
+        }
+    });
+</script>
+{% endblock %}

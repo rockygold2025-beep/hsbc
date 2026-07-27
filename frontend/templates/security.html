@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Security Centre | HSBC Bank{% endblock %}
+
+{% block content %}
+<div class="container" style="padding:40px 0; max-width:800px; margin:0 auto;">
+    <h1 style="color: var(--primary-dark-blue); margin-bottom: 10px;">🔒 Security Centre</h1>
+    <p style="font-size: 16px; opacity: 0.7; margin-bottom: 30px;">
+        Your security is our top priority. Learn how we protect you and what you can do to stay safe.
+    </p>
+
+    <div
+        style="background: var(--primary-white); border-radius: var(--radius-lg); padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow-sm);">
+        <h3 style="color: var(--primary-dark-blue); margin-bottom: 15px;">🛡️ Our Security Measures</h3>
+        <ul style="list-style: none; padding: 0;">
+            <li style="padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 15px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                Advanced encryption (SSL/TLS) for all online sessions.
+            </li>
+            <li style="padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 15px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                Real‑time fraud monitoring and suspicious activity alerts.
+            </li>
+            <li style="padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 15px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                Secure login with password and optional two‑factor authentication.
+            </li>
+            <li style="padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 15px;">
+                <span style="color: var(--success); font-weight: 700;">✓</span>
+                24/7 security operations centre monitoring your accounts.
+            </li>
+        </ul>
+    </div>
+
+    <div
+        style="background: var(--primary-white); border-radius: var(--radius-lg); padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow-sm);">
+        <h3 style="color: var(--primary-dark-blue); margin-bottom: 15px;">🧑‍💻 Tips for Safe Banking</h3>
+        <ul style="list-style: none; padding: 0;">
+            <li style="padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 15px;">
+                <span style="color: var(--accent-gold); font-weight: 700;">•</span>
+                Never share your PIN, password, or verification codes with anyone.
+            </li>
+            <li style="padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 15px;">
+                <span style="color: var(--accent-gold); font-weight: 700;">•</span>
+                Always log out after using a shared or public device.
+            </li>
+            <li style="padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 15px;">
+                <span style="color: var(--accent-gold); font-weight: 700;">•</span>
+                Keep your contact details up to date so we can reach you quickly.
+            </li>
+            <li style="padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 15px;">
+                <span style="color: var(--accent-gold); font-weight: 700;">•</span>
+                Regularly review your transaction history for any unusual activity.
+            </li>
+            <li style="padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 15px;">
+                <span style="color: var(--accent-gold); font-weight: 700;">•</span>
+                Use a strong, unique password and enable two‑factor authentication.
+            </li>
+        </ul>
+    </div>
+
+    <div
+        style="background: var(--primary-white); border-radius: var(--radius-lg); padding: 25px; box-shadow: var(--shadow-sm);">
+        <h3 style="color: var(--primary-dark-blue); margin-bottom: 15px;">📞 Report a Security Concern</h3>
+        <p style="font-size: 15px; opacity: 0.8; margin-bottom: 15px;">
+            If you notice any suspicious activity on your account or have security questions, please contact us
+            immediately.
+        </p>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <a href="{{ url_for('main.contact') }}" class="btn btn-primary">📞 Contact Support</a>
+            <a href="{{ url_for('main.help') }}" class="btn btn-secondary">💡 Help Center</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

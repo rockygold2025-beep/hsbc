@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Help Center | HSBC Bank{% endblock %}
+
+{% block head %}
+<style>
+    .help-section {
+        padding: 40px 0;
+    }
+
+    .help-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .help-header h1 {
+        font-size: 36px;
+        color: var(--primary-dark-blue);
+        margin-bottom: 10px;
+    }
+
+    .help-header p {
+        font-size: 17px;
+        opacity: 0.7;
+    }
+
+    .help-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .help-card {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        border: 1px solid var(--border-light);
+    }
+
+    .help-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--accent-gold);
+    }
+
+    .help-card .icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .help-card h4 {
+        color: var(--primary-dark-blue);
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+
+    .help-card p {
+        font-size: 14px;
+        opacity: 0.7;
+        margin-bottom: 15px;
+    }
+
+    .faq-section {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .faq-item {
+        background: var(--primary-white);
+        border-radius: var(--radius-md);
+        padding: 20px 25px;
+        margin-bottom: 15px;
+        box-shadow: var(--shadow-sm);
+        border-left: 4px solid var(--accent-gold);
+    }
+
+    .faq-item h4 {
+        color: var(--primary-dark-blue);
+        font-size: 17px;
+        margin-bottom: 5px;
+        cursor: pointer;
+    }
+
+    .faq-item p {
+        font-size: 14px;
+        opacity: 0.7;
+        display: none;
+        margin-top: 10px;
+    }
+
+    .faq-item p.show {
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .help-header h1 {
+            font-size: 28px;
+        }
+
+        .help-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="help-section">
+    <div class="container">
+        <div class="help-header animate-fade-in-down">
+            <h1>💡 Help Center</h1>
+            <p>Find answers to common questions and get the support you need.</p>
+        </div>
+
+        <div class="help-grid">
+            <div class="help-card animate-fade-in-up delay-1">
+                <span class="icon">📖</span>
+                <h4>Getting Started</h4>
+                <p>Learn how to open an account and start banking</p>
+                <button class="btn btn-primary" onclick="showToast('Guide loading...', 'info')">View Guide</button>
+            </div>
+            <div class="help-card animate-fade-in-up delay-2">
+                <span class="icon">💳</span>
+                <h4>Payments</h4>
+                <p>How to send money and manage transfers</p>
+                <button class="btn btn-primary" onclick="showToast('Payment guide loading...', 'info')">Learn
+                    More</button>
+            </div>
+            <div class="help-card animate-fade-in-up delay-3">
+                <span class="icon">🔒</span>
+                <h4>Security</h4>
+                <p>Keep your account safe and secure</p>
+                <button class="btn btn-primary" onclick="window.location.href='{{ url_for('main.security') }}'">View
+                    Tips</button>
+            </div>
+            <div class="help-card animate-fade-in-up delay-4">
+                <span class="icon">📱</span>
+                <h4>Mobile Banking</h4>
+                <p>Using HSBC on your mobile device</p>
+                <button class="btn btn-primary" onclick="showToast('Mobile guide loading...', 'info')">Get
+                    Started</button>
+            </div>
+            <div class="help-card animate-fade-in-up delay-5">
+                <span class="icon">💰</span>
+                <h4>Savings</h4>
+                <p>Save money and earn interest</p>
+                <button class="btn btn-primary" onclick="window.location.href='{{ url_for('user.savings') }}'">Learn
+                    More</button>
+            </div>
+            <div class="help-card animate-fade-in-up delay-6">
+                <span class="icon">📞</span>
+                <h4>Contact Support</h4>
+                <p>Reach out to our support team</p>
+                <button class="btn btn-primary" onclick="window.location.href='{{ url_for('main.contact') }}'">Contact
+                    Us</button>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2 style="text-align:center; margin-bottom:30px;">Frequently Asked Questions</h2>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <h4>❓ How do I open an account?</h4>
+                <p>Simply click the "Register" button at the top of the page. You'll need to provide some personal
+                    information, verify your identity, and you'll be ready to bank with HSBC.</p>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <h4>❓ How do I make a transfer?</h4>
+                <p>Go to the Payments section from your dashboard. Enter the recipient's username or bank details, the
+                    amount, and submit. All transfers require admin approval for security.</p>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <h4>❓ Is my money protected?</h4>
+                <p>Yes! Your eligible deposits are protected by the Financial Services Compensation Scheme (FSCS) up to
+                    £85,000 per person, per banking group.</p>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <h4>❓ How do I reset my password?</h4>
+                <p>Go to the login page and click "Forgot Password". Follow the instructions to reset your password via
+                    email verification.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function toggleFaq(element) {
+        const answer = element.querySelector('p');
+        answer.classList.toggle('show');
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Savings & Investments | HSBC Bank{% endblock %}
+
+{% block head %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-dark-blue) 0%, #00337C 100%);
+        color: var(--primary-white);
+        padding: 50px 0;
+    }
+
+    .hero-section h1 {
+        font-size: 36px;
+    }
+
+    .hero-section p {
+        opacity: 0.9;
+        font-size: 16px;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .summary-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-left: 4px solid var(--accent-gold);
+        padding: 18px;
+        border-radius: var(--radius-md);
+    }
+
+    .summary-card .amount {
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .summary-card .label {
+        font-size: 13px;
+        opacity: 0.8;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin: 40px 0;
+    }
+
+    .product-card {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--accent-gold);
+    }
+
+    .product-card h3 {
+        color: var(--primary-dark-blue);
+        font-size: 20px;
+    }
+
+    .rate-tag {
+        display: inline-block;
+        background: rgba(10, 127, 66, 0.08);
+        color: var(--success);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 10px 0 15px;
+    }
+
+    .product-features {
+        list-style: none;
+        margin-bottom: 20px;
+    }
+
+    .product-features li {
+        padding: 5px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .product-features li::before {
+        content: "✓";
+        color: var(--success);
+        font-weight: 700;
+    }
+
+    .holdings-card {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 25px;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+        margin-top: 20px;
+    }
+
+    .positive {
+        color: var(--success);
+        font-weight: 600;
+    }
+
+    .negative {
+        color: var(--error);
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 28px;
+        }
+
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <h1>Grow your savings and invest with confidence</h1>
+        <p>Choose from flexible savings accounts and investment plans.</p>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">Available Balance</div>
+                <div class="amount">£{{ "%.2f"|format(current_user.balance) }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Total Savings</div>
+                <div class="amount">£0.00</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Investments</div>
+                <div class="amount">£0.00</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 50px 0;">
+    <div class="container">
+        <h2 style="text-align:center; margin-bottom:15px;">Savings Accounts</h2>
+        <p style="text-align:center; opacity:0.7; max-width:600px; margin:0 auto 40px;">Secure your funds and earn
+            competitive interest rates.</p>
+
+        <div class="cards-grid">
+            <div class="product-card animate-fade-in-up delay-1">
+                <h3>Easy Access Savings</h3>
+                <div class="rate-tag">Up to 2.15% AER</div>
+                <p style="font-size:14px; opacity:0.8;">Save and withdraw anytime without penalties.</p>
+                <ul class="product-features">
+                    <li>No minimum deposit</li>
+                    <li>Unlimited free withdrawals</li>
+                    <li>Interest paid monthly</li>
+                </ul>
+                <button class="btn btn-primary" style="width:100%;"
+                    onclick="showToast('Account opening coming soon!', 'info')">Open Account</button>
+            </div>
+
+            <div class="product-card animate-fade-in-up delay-2">
+                <h3>Fixed Term Deposit</h3>
+                <div class="rate-tag">Up to 4.25% AER</div>
+                <p style="font-size:14px; opacity:0.8;">Lock your money away for guaranteed higher returns.</p>
+                <ul class="product-features">
+                    <li>Minimum deposit: £500</li>
+                    <li>Choose 1-5 year term</li>
+                    <li>Guaranteed returns</li>
+                </ul>
+                <button class="btn btn-primary" style="width:100%;"
+                    onclick="showToast('Account opening coming soon!', 'info')">Open Account</button>
+            </div>
+
+            <div class="product-card animate-fade-in-up delay-3">
+                <h3>Regular Saver</h3>
+                <div class="rate-tag">Up to 5.00% AER</div>
+                <p style="font-size:14px; opacity:0.8;">Build a habit of saving with monthly payments.</p>
+                <ul class="product-features">
+                    <li>Save £25-£250/month</li>
+                    <li>12-month fixed term</li>
+                    <li>Bonus interest available</li>
+                </ul>
+                <button class="btn btn-primary" style="width:100%;"
+                    onclick="showToast('Account opening coming soon!', 'info')">Open Account</button>
+            </div>
+        </div>
+
+        <h2 style="text-align:center; margin-top:50px; margin-bottom:15px;">Investment Options</h2>
+        <p style="text-align:center; opacity:0.7; max-width:600px; margin:0 auto 40px;">Start building your wealth with
+            our investment portfolios.</p>
+
+        <div class="cards-grid">
+            <div class="product-card animate-fade-in-up delay-4">
+                <h3>Managed Growth Portfolio</h3>
+                <div class="rate-tag">Target: 5-8% Annual Return</div>
+                <p style="font-size:14px; opacity:0.8;">Professionally managed mix of stocks and bonds.</p>
+                <ul class="product-features">
+                    <li>Minimum investment: £1,000</li>
+                    <li>Rebalanced quarterly</li>
+                    <li>Low management fee: 0.75%</li>
+                </ul>
+                <button class="btn btn-primary" style="width:100%;"
+                    onclick="showToast('Investment coming soon!', 'info')">Start Investing</button>
+            </div>
+
+            <div class="product-card animate-fade-in-up delay-5">
+                <h3>Global Equity Fund</h3>
+                <div class="rate-tag">Target: 7-12% Annual Return</div>
+                <p style="font-size:14px; opacity:0.8;">Focus on high-growth companies worldwide.</p>
+                <ul class="product-features">
+                    <li>Minimum investment: £500</li>
+                    <li>Tech & healthcare focus</li>
+                    <li>Monthly top-up options</li>
+                </ul>
+                <button class="btn btn-primary" style="width:100%;"
+                    onclick="showToast('Investment coming soon!', 'info')">Start Investing</button>
+            </div>
+
+            <div class="product-card animate-fade-in-up delay-6">
+                <h3>Secure Bond Fund</h3>
+                <div class="rate-tag">Target: 3-5% Annual Return</div>
+                <p style="font-size:14px; opacity:0.8;">Low-risk investment in government and corporate bonds.</p>
+                <ul class="product-features">
+                    <li>Minimum investment: £250</li>
+                    <li>Lowest risk option</li>
+                    <li>Regular income payouts</li>
+                </ul>
+                <button class="btn btn-primary" style="width:100%;"
+                    onclick="showToast('Investment coming soon!', 'info')">Start Investing</button>
+            </div>
+        </div>
+
+        <!-- Active Holdings -->
+        <div style="margin-top: 50px;">
+            <h2 style="text-align:center; margin-bottom:20px;">Your Active Holdings</h2>
+            <div class="holdings-card">
+                <div style="text-align:center; padding: 30px; opacity:0.6;">
+                    <span style="font-size:40px; display:block; margin-bottom:10px;">📊</span>
+                    <p>You have no active savings or investments yet.</p>
+                    <p style="font-size:13px;">Open an account above to start growing your money.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

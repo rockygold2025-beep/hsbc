@@ -1,0 +1,1623 @@
+{% extends "base.html" %}
+
+{% block title %}Payments & Transfers | HSBC Bank{% endblock %}
+
+{% block head %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-dark-blue) 0%, #00337C 100%);
+        color: var(--primary-white);
+        padding: 50px 0;
+    }
+
+    .hero-section h1 {
+        font-size: 36px;
+    }
+
+    .hero-section p {
+        opacity: 0.9;
+        font-size: 16px;
+    }
+
+    .balance-box {
+        background: rgba(255, 255, 255, 0.1);
+        border-left: 4px solid var(--accent-gold);
+        padding: 18px 22px;
+        border-radius: var(--radius-md);
+        display: inline-block;
+        margin-top: 15px;
+    }
+
+    .balance-box .amount {
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .balance-box .label {
+        font-size: 13px;
+        opacity: 0.8;
+    }
+
+    .form-section {
+        padding: 50px 0;
+        background: var(--primary-white);
+    }
+
+    .form-wrapper {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 35px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .form-wrapper h2 {
+        text-align: center;
+        color: var(--primary-dark-blue);
+        margin-bottom: 10px;
+        font-size: 28px;
+    }
+
+    .form-wrapper .subtitle {
+        text-align: center;
+        opacity: 0.7;
+        margin-bottom: 30px;
+        font-size: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 14px;
+        color: var(--dark-grey);
+    }
+
+    .form-group .required {
+        color: var(--error);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100% !important;
+        padding: 12px 16px !important;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-size: 15px !important;
+        transition: var(--transition);
+        background: var(--primary-white);
+        box-sizing: border-box !important;
+        display: block !important;
+        min-height: 48px !important;
+    }
+
+    .form-group textarea {
+        min-height: 80px !important;
+        resize: vertical;
+        font-family: var(--font-main);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
+    .form-group .hint {
+        font-size: 12px;
+        opacity: 0.7;
+        margin-top: 4px;
+    }
+
+    .transfer-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        background: var(--light-grey);
+        padding: 5px;
+        border-radius: var(--radius-md);
+    }
+
+    .transfer-tab {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        background: transparent;
+        color: var(--dark-grey);
+        text-align: center;
+    }
+
+    .transfer-tab:hover {
+        background: rgba(212, 175, 55, 0.1);
+    }
+
+    .transfer-tab.active {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .transfer-tab .tab-icon {
+        margin-right: 8px;
+    }
+
+    .international-fields {
+        display: none;
+    }
+
+    .international-fields.show {
+        display: block;
+    }
+
+    .pin-input-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .pin-input-group input {
+        width: 50px !important;
+        height: 60px !important;
+        min-height: 60px !important;
+        text-align: center;
+        font-size: 24px !important;
+        font-weight: 700;
+        letter-spacing: 2px;
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        padding: 0 !important;
+    }
+
+    .pin-input-group input:focus {
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        outline: none;
+    }
+
+    .verification-container {
+        display: none;
+        margin-top: 30px;
+        padding: 30px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: var(--radius-lg);
+        border: 3px solid var(--accent-gold);
+        box-shadow: 0 0 0 5px rgba(212, 175, 55, 0.1);
+        position: relative;
+    }
+
+    .verification-container.show {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .verification-container .verification-header {
+        text-align: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--accent-gold);
+    }
+
+    .verification-container .verification-header h3 {
+        color: var(--primary-dark-blue);
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .verification-container .verification-header p {
+        font-size: 14px;
+        opacity: 0.7;
+    }
+
+    .verification-container .verification-header .transaction-ref {
+        display: inline-block;
+        background: var(--primary-dark-blue);
+        color: var(--primary-white);
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-family: monospace;
+        letter-spacing: 1px;
+        margin-top: 8px;
+    }
+
+    .progress-info {
+        background: var(--primary-white);
+        border-radius: var(--radius-md);
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        border: 1px solid var(--border-light);
+    }
+
+    .progress-info .progress-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary-dark-blue);
+    }
+
+    .progress-info .progress-text .highlight {
+        color: var(--accent-gold);
+    }
+
+    .progress-info .progress-status {
+        font-size: 13px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .progress-info .progress-status.pending {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+    }
+
+    .progress-info .progress-status.completed {
+        background: rgba(10, 127, 66, 0.15);
+        color: var(--success);
+    }
+
+    .verification-steps {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 25px;
+    }
+
+    .step-dot {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--border-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--dark-grey);
+        transition: var(--transition);
+        border: 3px solid transparent;
+    }
+
+    .step-dot.active {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 5px rgba(212, 175, 55, 0.2);
+    }
+
+    .step-dot.completed {
+        background: var(--success);
+        color: white;
+        border-color: var(--success);
+    }
+
+    .step-dot.completed .step-number {
+        display: none;
+    }
+
+    .step-dot.completed .check-mark {
+        display: inline;
+    }
+
+    .step-dot .check-mark {
+        display: none;
+    }
+
+    .code-step {
+        display: none;
+        padding: 25px;
+        background: var(--primary-white);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 15px;
+        border-left: 4px solid var(--accent-gold);
+    }
+
+    .code-step.active {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    .code-step h4 {
+        color: var(--primary-dark-blue);
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .code-step .code-description {
+        font-size: 14px;
+        opacity: 0.7;
+        margin-bottom: 15px;
+    }
+
+    .code-step .code-input-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .code-step .code-input-group input {
+        width: 220px !important;
+        padding: 12px 16px !important;
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-size: 18px !important;
+        font-family: monospace;
+        letter-spacing: 2px;
+        text-align: center;
+        min-height: 48px !important;
+        flex: 1;
+    }
+
+    .code-step .code-input-group input:focus {
+        border-color: var(--accent-gold);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
+    .code-step .code-input-group input.error {
+        border-color: var(--error);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+    }
+
+    .code-step .code-input-group input.success {
+        border-color: var(--success);
+        box-shadow: 0 0 0 3px rgba(10, 127, 66, 0.15);
+    }
+
+    .code-step .btn-verify {
+        padding: 12px 30px;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: var(--transition);
+        white-space: nowrap;
+    }
+
+    .code-step .btn-verify:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .code-step .btn-verify:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    .code-step .code-error {
+        color: var(--error);
+        font-size: 13px;
+        margin-top: 8px;
+        display: none;
+    }
+
+    .code-step .code-success {
+        color: var(--success);
+        font-size: 13px;
+        margin-top: 8px;
+        display: none;
+    }
+
+    .code-step .support-note {
+        background: rgba(59, 130, 246, 0.05);
+        border-left: 4px solid var(--info);
+        padding: 12px 16px;
+        margin-top: 12px;
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        font-size: 13px;
+    }
+
+    .code-step .support-note a {
+        color: var(--accent-gold);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .code-step .support-note a:hover {
+        text-decoration: underline;
+    }
+
+    .completion-message {
+        display: none;
+        text-align: center;
+        padding: 30px 20px;
+        background: rgba(10, 127, 66, 0.05);
+        border-radius: var(--radius-md);
+        border: 2px solid var(--success);
+    }
+
+    .completion-message.show {
+        display: block;
+        animation: scaleIn 0.5s ease;
+    }
+
+    .completion-message .success-icon {
+        font-size: 60px;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    .completion-message h3 {
+        color: var(--success);
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .completion-message p {
+        font-size: 15px;
+        opacity: 0.7;
+        margin-bottom: 5px;
+    }
+
+    .completion-message .btn-submit {
+        max-width: 300px;
+        margin: 20px auto 0;
+    }
+
+    .trans-section {
+        padding: 50px 0;
+    }
+
+    .trans-card {
+        background: var(--primary-white);
+        padding: 30px 25px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        opacity: 0.6;
+    }
+
+    .empty-state .empty-icon {
+        font-size: 40px;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .loading-spinner .spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid var(--border-light);
+        border-top-color: var(--accent-gold);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        padding: 15px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    .info-note {
+        background: rgba(10, 127, 66, 0.05);
+        border-left: 4px solid var(--success);
+        padding: 15px 20px;
+        margin: 20px 0;
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        font-size: 13px;
+    }
+
+    .info-note strong {
+        color: var(--success);
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .msg-box {
+        padding: 14px 18px;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        margin: 15px 0;
+        display: none;
+        border-left: 4px solid;
+    }
+
+    .msg-success {
+        background: rgba(10, 127, 66, 0.05);
+        color: var(--success);
+        border-color: var(--success);
+        display: block;
+    }
+
+    .msg-error {
+        background: rgba(220, 38, 38, 0.05);
+        color: var(--error);
+        border-color: var(--error);
+        display: block;
+    }
+
+    .msg-info {
+        background: rgba(59, 130, 246, 0.05);
+        color: var(--info);
+        border-color: var(--info);
+        display: block;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 28px;
+        }
+
+        .form-wrapper {
+            padding: 20px;
+        }
+
+        .transfer-tab {
+            font-size: 13px;
+            padding: 10px;
+        }
+
+        .balance-box .amount {
+            font-size: 22px;
+        }
+
+        .pin-input-group input {
+            width: 40px !important;
+            height: 50px !important;
+            min-height: 50px !important;
+            font-size: 20px !important;
+        }
+
+        .code-step .code-input-group input {
+            width: 100% !important;
+        }
+
+        .code-step .code-input-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .code-step .btn-verify {
+            width: 100%;
+        }
+
+        .step-dot {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+        }
+
+        .verification-steps {
+            gap: 4px;
+        }
+
+        .verification-container {
+            padding: 20px;
+        }
+
+        .progress-info {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-section h1 {
+            font-size: 24px;
+        }
+
+        .pin-input-group input {
+            width: 35px !important;
+            height: 45px !important;
+            min-height: 45px !important;
+            font-size: 18px !important;
+        }
+
+        .pin-input-group {
+            gap: 5px;
+        }
+
+        .step-dot {
+            width: 28px;
+            height: 28px;
+            font-size: 10px;
+        }
+
+        .verification-container {
+            padding: 15px;
+        }
+
+        .code-step {
+            padding: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <h1>💸 Payments & Transfers</h1>
+        <p>Send money locally or internationally with ease.</p>
+        <div class="balance-box">
+            <div class="label">Available Balance</div>
+            <div class="amount" id="availableBalance">£{{ "%.2f"|format(current_user.balance) }}</div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+
+    <div class="info-note" style="background:rgba(245,158,11,0.05); border-left-color:var(--warning);">
+        <strong>🔑 Transaction PIN Required</strong>
+        You will need to enter your 6-digit transaction PIN to confirm this transfer.
+    </div>
+
+</div>
+
+<section class="form-section">
+    <div class="container">
+        <div class="form-wrapper">
+            <h2>Make a Transfer</h2>
+            <p class="subtitle">Choose your transfer type and enter recipient details.</p>
+
+            <div class="transfer-tabs">
+                <button class="transfer-tab active" id="localTab" onclick="switchTransferType('local')">
+                    <span class="tab-icon">🇬🇧</span> Local Transfer
+                </button>
+                <button class="transfer-tab" id="internationalTab" onclick="switchTransferType('international')">
+                    <span class="tab-icon">🌍</span> International Transfer
+                </button>
+            </div>
+
+            <div id="messageContainer">
+                <div class="msg-box" id="msgBox"></div>
+            </div>
+
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p style="margin-top:10px; opacity:0.6; font-size:14px;">Processing your transfer...</p>
+            </div>
+
+            <form id="transferForm" onsubmit="event.preventDefault(); submitTransfer();">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                <input type="hidden" name="transfer_type" id="transferType" value="local">
+                <input type="hidden" id="pendingTransactionId" value="">
+
+                <div id="localFields">
+                    <div class="form-group">
+                        <label>Recipient Username <span class="required">*</span></label>
+                        <input type="text" name="receiver" id="receiver" placeholder="Enter the recipient's username"
+                            required>
+                        <div class="hint">Must be an existing HSBC user</div>
+                    </div>
+                </div>
+
+                <div id="internationalFields" class="international-fields">
+                    <div class="form-group">
+                        <label>Bank Name <span class="required">*</span></label>
+                        <input type="text" name="bank_name" id="bankName" placeholder="e.g., HSBC USA, Deutsche Bank">
+                    </div>
+                    <div class="form-group">
+                        <label>Account Holder Name <span class="required">*</span></label>
+                        <input type="text" name="account_holder" id="accountHolder"
+                            placeholder="Full name of the account holder">
+                    </div>
+                    <div class="form-group">
+                        <label>Account Number / IBAN <span class="required">*</span></label>
+                        <input type="text" name="account_number" id="accountNumber"
+                            placeholder="8-digit account number or full IBAN">
+                        <div class="hint">International Bank Account Number (IBAN) for international transfers</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Bank Country <span class="required">*</span></label>
+                        <select name="bank_country" id="bankCountry">
+                            <option value="">Select a country...</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Germany">Germany</option>
+                            <option value="France">France</option>
+                            <option value="Italy">Italy</option>
+                            <option value="Spain">Spain</option>
+                            <option value="South Korea">South Korea</option>
+                            <option value="Switzerland">Switzerland</option>
+                            <option value="Sweden">Sweden</option>
+                            <option value="Norway">Norway</option>
+                            <option value="Denmark">Denmark</option>
+                            <option value="Finland">Finland</option>
+                            <option value="Belgium">Belgium</option>
+                            <option value="Austria">Austria</option>
+                            <option value="Portugal">Portugal</option>
+                            <option value="Greece">Greece</option>
+                            <option value="Ireland">Ireland</option>
+                            <option value="Poland">Poland</option>
+                            <option value="Czech Republic">Czech Republic</option>
+                            <option value="Hungary">Hungary</option>
+                            <option value="Romania">Romania</option>
+                            <option value="Bulgaria">Bulgaria</option>
+                            <option value="Croatia">Croatia</option>
+                            <option value="Slovakia">Slovakia</option>
+                            <option value="Slovenia">Slovenia</option>
+                            <option value="Estonia">Estonia</option>
+                            <option value="Latvia">Latvia</option>
+                            <option value="Lithuania">Lithuania</option>
+                            <option value="Luxembourg">Luxembourg</option>
+                            <option value="Malta">Malta</option>
+                            <option value="Cyprus">Cyprus</option>
+                            <option value="Iceland">Iceland</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Mexico">Mexico</option>
+                            <option value="Australia">Australia</option>
+                            <option value="New Zealand">New Zealand</option>
+                            <option value="Japan">Japan</option>
+                            <option value="South Korea">South Korea</option>
+                            <option value="China">China</option>
+                            <option value="India">India</option>
+                            <option value="Singapore">Singapore</option>
+                            <option value="Malaysia">Malaysia</option>
+                            <option value="Thailand">Thailand</option>
+                            <option value="Vietnam">Vietnam</option>
+                            <option value="Indonesia">Indonesia</option>
+                            <option value="Philippines">Philippines</option>
+                            <option value="Pakistan">Pakistan</option>
+                            <option value="Bangladesh">Bangladesh</option>
+                            <option value="Sri Lanka">Sri Lanka</option>
+                            <option value="Nepal">Nepal</option>
+                            <option value="Israel">Israel</option>
+                            <option value="Turkey">Turkey</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="United Arab Emirates">United Arab Emirates</option>
+                            <option value="Qatar">Qatar</option>
+                            <option value="Kuwait">Kuwait</option>
+                            <option value="Oman">Oman</option>
+                            <option value="Bahrain">Bahrain</option>
+                            <option value="Jordan">Jordan</option>
+                            <option value="Lebanon">Lebanon</option>
+                            <option value="Brazil">Brazil</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Chile">Chile</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Peru">Peru</option>
+                            <option value="Venezuela">Venezuela</option>
+                            <option value="Russia">Russia</option>
+                            <option value="Ukraine">Ukraine</option>
+                            <option value="Belarus">Belarus</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Armenia">Armenia</option>
+                            <option value="Azerbaijan">Azerbaijan</option>
+                            <option value="Kazakhstan">Kazakhstan</option>
+                            <option value="Uzbekistan">Uzbekistan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>SWIFT / BIC Code</label>
+                        <input type="text" name="swift_code" id="swiftCode" placeholder="e.g., HSBCGB2LXXX">
+                        <div class="hint">Required for international transfers</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount (£) <span class="required">*</span></label>
+                    <input type="number" name="amount" id="amount" step="0.01" min="0.01" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Reference / Description</label>
+                    <textarea name="description" id="description" rows="2"
+                        placeholder="Add a note for this transfer (optional)"></textarea>
+                </div>
+
+                <div class="form-group"
+                    style="margin-top:25px; padding-top:25px; border-top:2px solid var(--border-light);">
+                    <label style="font-size:16px; color:var(--primary-dark-blue);">
+                        🔑 Confirm with Transaction PIN <span class="required">*</span>
+                    </label>
+                    <p style="font-size:13px; opacity:0.7; margin-bottom:15px;">
+                        Enter your 6-digit transaction PIN to authorize this transfer.
+                    </p>
+                    <div class="pin-input-group" id="pinGroup">
+                        <input type="password" id="pin1" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="password" id="pin2" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="password" id="pin3" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="password" id="pin4" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="password" id="pin5" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="password" id="pin6" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                    </div>
+                    <div class="hint" id="pinHint">Enter your 6-digit PIN. Press Tab or Enter to move to next field.
+                    </div>
+                    <div id="pinError" style="color:var(--error); font-size:13px; margin-top:8px; display:none;">
+                        ❌ Please enter a valid 6-digit PIN.
+                    </div>
+                </div>
+
+                <div id="internationalNote" class="info-note"
+                    style="display:none; background:rgba(245,158,11,0.05); border-left-color:var(--warning);">
+                    <strong>🌍 International Transfer Note</strong>
+                    International transfers typically take 1-5 working days. Additional fees may apply. You will need to
+                    enter 4 verification codes after submission.
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    💸 Submit Transfer for Approval
+                </button>
+            </form>
+
+            <div class="verification-container" id="verificationContainer">
+                <div class="verification-header">
+                    <h3>🔐 Code Verification Required</h3>
+                    <p>Please enter the 4 verification codes provided by our support team to complete your international
+                        transfer.</p>
+                    <span class="transaction-ref" id="transactionRef">Transaction: HSBC-2026-XXXX</span>
+                </div>
+
+                <div class="progress-info">
+                    <div class="progress-text">
+                        Step <span id="currentStepDisplay">1</span> of 4: <span id="currentStepName">BVLC</span>
+                    </div>
+                    <div class="progress-status pending" id="progressStatus">⏳ In Progress</div>
+                </div>
+
+                <div class="verification-steps" id="verificationSteps">
+                    <div class="step-dot active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="check-mark">✓</span>
+                    </div>
+                    <div class="step-dot" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="check-mark">✓</span>
+                    </div>
+                    <div class="step-dot" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="check-mark">✓</span>
+                    </div>
+                    <div class="step-dot" data-step="4">
+                        <span class="step-number">4</span>
+                        <span class="check-mark">✓</span>
+                    </div>
+                </div>
+
+                <div class="code-step active" data-step="1">
+                    <h4>🔐 Step 1: BVLC</h4>
+                    <p class="code-description">Enter your <strong>Bank Verification Licence Code (BVLC)</strong> to
+                        proceed.</p>
+                    <div class="code-input-group">
+                        <input type="text" id="code1" maxlength="10" placeholder="Enter BVLC" class="code-input">
+                        <button type="button" class="btn-verify" onclick="verifyCode(1)">Verify</button>
+                    </div>
+                    <div class="code-error" id="codeError1">❌ Invalid BVLC code. Please try again.</div>
+                    <div class="code-success" id="codeSuccess1">✅ BVLC verified successfully!</div>
+                    <div class="support-note">
+                        <strong>📞 Need Help?</strong> Contact our <a href="{{ url_for('main.contact') }}">Customer
+                            Support</a> or use <a href="#" onclick="openLiveChat()">Live Chat</a> to get your BVLC code.
+                    </div>
+                </div>
+
+                <div class="code-step" data-step="2">
+                    <h4>🔐 Step 2: TAC</h4>
+                    <p class="code-description">Enter your <strong>Tax Authorization Code (TAC)</strong> to proceed.</p>
+                    <div class="code-input-group">
+                        <input type="text" id="code2" maxlength="10" placeholder="Enter TAC" class="code-input">
+                        <button type="button" class="btn-verify" onclick="verifyCode(2)">Verify</button>
+                    </div>
+                    <div class="code-error" id="codeError2">❌ Invalid TAC code. Please try again.</div>
+                    <div class="code-success" id="codeSuccess2">✅ TAC verified successfully!</div>
+                    <div class="support-note">
+                        <strong>📞 Need Help?</strong> Contact our <a href="{{ url_for('main.contact') }}">Customer
+                            Support</a> or use <a href="#" onclick="openLiveChat()">Live Chat</a> to get your TAC code.
+                    </div>
+                </div>
+
+                <div class="code-step" data-step="3">
+                    <h4>🔐 Step 3: Insurance Code</h4>
+                    <p class="code-description">Enter your <strong>Insurance Verification Code</strong> to proceed.</p>
+                    <div class="code-input-group">
+                        <input type="text" id="code3" maxlength="10" placeholder="Enter Insurance Code"
+                            class="code-input">
+                        <button type="button" class="btn-verify" onclick="verifyCode(3)">Verify</button>
+                    </div>
+                    <div class="code-error" id="codeError3">❌ Invalid Insurance Code. Please try again.</div>
+                    <div class="code-success" id="codeSuccess3">✅ Insurance Code verified successfully!</div>
+                    <div class="support-note">
+                        <strong>📞 Need Help?</strong> Contact our <a href="{{ url_for('main.contact') }}">Customer
+                            Support</a> or use <a href="#" onclick="openLiveChat()">Live Chat</a> to get your Insurance
+                        Code.
+                    </div>
+                </div>
+
+                <div class="code-step" data-step="4">
+                    <h4>🔐 Step 4: ITAC</h4>
+                    <p class="code-description">Enter your <strong>International Transfer Authorization Code
+                            (ITAC)</strong> to complete.</p>
+                    <div class="code-input-group">
+                        <input type="text" id="code4" maxlength="10" placeholder="Enter ITAC" class="code-input">
+                        <button type="button" class="btn-verify" onclick="verifyCode(4)">Verify</button>
+                    </div>
+                    <div class="code-error" id="codeError4">❌ Invalid ITAC code. Please try again.</div>
+                    <div class="code-success" id="codeSuccess4">✅ ITAC verified successfully!</div>
+                    <div class="support-note">
+                        <strong>📞 Need Help?</strong> Contact our <a href="{{ url_for('main.contact') }}">Customer
+                            Support</a> or use <a href="#" onclick="openLiveChat()">Live Chat</a> to get your ITAC code.
+                    </div>
+                </div>
+
+                <div class="completion-message" id="completionMessage">
+                    <span class="success-icon">🎉</span>
+                    <h3>All Codes Verified!</h3>
+                    <p>Your international transfer has been submitted successfully.</p>
+                    <p style="font-size:14px; opacity:0.6;">Transaction is now pending admin approval.</p>
+                    <button class="btn-submit"
+                        style="margin-top:20px; max-width:300px; margin-left:auto; margin-right:auto;"
+                        onclick="location.reload()">
+                        Make Another Transfer
+                    </button>
+                </div>
+            </div>
+
+            <div id="resultContainer" style="display:none; margin-top:20px;">
+                <div class="msg-box msg-success" id="resultMessage"></div>
+                <button class="btn-submit" style="margin-top:10px;" onclick="location.reload()">Make Another
+                    Transfer</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="trans-section">
+    <div class="container">
+        <h2 style="text-align:center; margin-bottom:30px;">Recent Transactions</h2>
+        <div class="trans-card">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if transactions %}
+                        {% for t in transactions %}
+                        <tr>
+                            <td>{{ t.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{% if t.transaction_type == 'international' %}🌍 International{% else %}🇬🇧 Local{%
+                                endif %}</td>
+                            <td>{{ t.sender.username if t.sender else 'System' }}</td>
+                            <td>{{ t.receiver.username if t.receiver else 'International Transfer' }}</td>
+                            <td class="{% if t.sender_id == current_user.id %}amount-out{% else %}amount-in{% endif %}">
+                                {% if t.sender_id == current_user.id %}-{% endif %}£{{ "%.2f"|format(t.amount) }}
+                            </td>
+                            <td><span class="status-badge status-{{ t.status }}">{{ t.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="empty-state"><span class="empty-icon">📭</span>No transactions yet
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // ============================================
+    // LIVE CHAT FUNCTION
+    // ============================================
+    function openLiveChat() {
+        if (typeof smartsupp !== 'undefined') {
+            smartsupp('chat:open');
+            showToast('💬 Live chat opened!', 'info');
+        } else {
+            showToast('💬 Live chat is loading. Please wait a moment and try again.', 'info');
+        }
+    }
+
+    // ============================================
+    // PIN INPUT HANDLING
+    // ============================================
+    const pinInputs = ['pin1', 'pin2', 'pin3', 'pin4', 'pin5', 'pin6'];
+
+    pinInputs.forEach((id, index) => {
+        const input = document.getElementById(id);
+
+        input.addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length === 1 && index < pinInputs.length - 1) {
+                document.getElementById(pinInputs[index + 1]).focus();
+            }
+            document.getElementById('pinError').style.display = 'none';
+            this.classList.remove('error', 'success');
+        });
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                document.getElementById(pinInputs[index - 1]).focus();
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submitTransfer();
+            }
+        });
+
+        input.addEventListener('focus', function () {
+            this.select();
+        });
+    });
+
+    function getPin() {
+        let pin = '';
+        for (const id of pinInputs) {
+            const val = document.getElementById(id).value;
+            if (!val) return null;
+            pin += val;
+        }
+        return pin;
+    }
+
+    function clearPin() {
+        for (const id of pinInputs) {
+            document.getElementById(id).value = '';
+            document.getElementById(id).classList.remove('error', 'success');
+        }
+        document.getElementById('pin1').focus();
+    }
+
+    // ============================================
+    // CODE VERIFICATION - UPDATED CUSTOM CODES
+    // ============================================
+    let currentStep = 1;
+    let verifiedSteps = {};
+
+    // CUSTOM VERIFICATION CODES
+    const VALID_CODES = {
+        code1: 'BVLC7894',
+        code2: 'TAC9649',
+        code3: 'INS2136',
+        code4: 'ITAC1990'
+    };
+
+    const STEP_NAMES = {
+        1: 'BVLC',
+        2: 'TAC',
+        3: 'Insurance Code',
+        4: 'ITAC'
+    };
+
+    function switchTransferType(type) {
+        const localTab = document.getElementById('localTab');
+        const internationalTab = document.getElementById('internationalTab');
+        const localFields = document.getElementById('localFields');
+        const internationalFields = document.getElementById('internationalFields');
+        const internationalNote = document.getElementById('internationalNote');
+        const transferType = document.getElementById('transferType');
+        const submitBtn = document.getElementById('submitBtn');
+
+        document.getElementById('verificationContainer').classList.remove('show');
+        document.getElementById('resultContainer').style.display = 'none';
+
+        if (type === 'international') {
+            localTab.classList.remove('active');
+            internationalTab.classList.add('active');
+            localFields.style.display = 'none';
+            internationalFields.classList.add('show');
+            internationalNote.style.display = 'block';
+            transferType.value = 'international';
+            submitBtn.textContent = '🌍 Submit International Transfer';
+
+            document.getElementById('bankName').required = true;
+            document.getElementById('accountHolder').required = true;
+            document.getElementById('accountNumber').required = true;
+            document.getElementById('bankCountry').required = true;
+            document.getElementById('receiver').required = false;
+        } else {
+            internationalTab.classList.remove('active');
+            localTab.classList.add('active');
+            localFields.style.display = 'block';
+            internationalFields.classList.remove('show');
+            internationalNote.style.display = 'none';
+            transferType.value = 'local';
+            submitBtn.textContent = '💸 Submit Transfer for Approval';
+
+            document.getElementById('receiver').required = true;
+            document.getElementById('bankName').required = false;
+            document.getElementById('accountHolder').required = false;
+            document.getElementById('accountNumber').required = false;
+            document.getElementById('bankCountry').required = false;
+        }
+        clearPin();
+        resetVerification();
+    }
+
+    function resetVerification() {
+        currentStep = 1;
+        verifiedSteps = {};
+        document.querySelectorAll('.code-step').forEach(el => el.classList.remove('active'));
+        document.querySelector('.code-step[data-step="1"]').classList.add('active');
+        document.querySelectorAll('.step-dot').forEach(dot => {
+            dot.classList.remove('active', 'completed');
+        });
+        document.querySelector('.step-dot[data-step="1"]').classList.add('active');
+        document.querySelectorAll('.code-input').forEach(input => {
+            input.value = '';
+            input.classList.remove('error', 'success');
+            input.disabled = false;
+        });
+        document.querySelectorAll('.code-error').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.code-success').forEach(el => el.style.display = 'none');
+        document.getElementById('completionMessage').classList.remove('show');
+        updateProgressInfo();
+    }
+
+    function updateProgressInfo() {
+        document.getElementById('currentStepDisplay').textContent = currentStep;
+        document.getElementById('currentStepName').textContent = STEP_NAMES[currentStep] || 'Complete';
+
+        const progressStatus = document.getElementById('progressStatus');
+        if (currentStep <= 4) {
+            progressStatus.className = 'progress-status pending';
+            progressStatus.textContent = '⏳ In Progress';
+        }
+    }
+
+    function verifyCode(step) {
+        const input = document.getElementById(`code${step}`);
+        const errorEl = document.getElementById(`codeError${step}`);
+        const successEl = document.getElementById(`codeSuccess${step}`);
+        const code = input.value.trim();
+
+        // Debug logging
+        console.log(`🔍 Verifying step ${step}`);
+        console.log(`📝 Entered code: "${code}"`);
+        console.log(`✅ Expected code: "${VALID_CODES['code' + step]}"`);
+
+        errorEl.style.display = 'none';
+        successEl.style.display = 'none';
+        input.classList.remove('error', 'success');
+
+        if (!code) {
+            errorEl.textContent = '❌ Please enter the verification code.';
+            errorEl.style.display = 'block';
+            input.classList.add('error');
+            showToast('❌ Please enter the verification code.', 'error');
+            return;
+        }
+
+        // Using custom codes: BVLC7894, TAC9649, INS2136, ITAC1990
+        const codeKey = 'code' + step;
+        const isValid = code === VALID_CODES[codeKey];
+
+        console.log(`🔑 Code key: "${codeKey}", Is valid: ${isValid}`);
+
+        if (isValid) {
+            successEl.style.display = 'block';
+            input.classList.add('success');
+            input.disabled = true;
+            verifiedSteps[step] = true;
+
+            // Save progress to database
+            saveVerificationProgress(step);
+
+            const dot = document.querySelector(`.step-dot[data-step="${step}"]`);
+            dot.classList.remove('active');
+            dot.classList.add('completed');
+
+            if (step < 4) {
+                // Move to next step
+                document.querySelector(`.code-step[data-step="${step}"]`).classList.remove('active');
+                document.querySelector(`.code-step[data-step="${step + 1}"]`).classList.add('active');
+                document.querySelector(`.step-dot[data-step="${step + 1}"]`).classList.add('active');
+                currentStep = step + 1;
+                document.getElementById(`code${step + 1}`).focus();
+                updateProgressInfo();
+                showToast(`✅ ${STEP_NAMES[step]} verified! Enter ${STEP_NAMES[step + 1]}.`, 'success');
+            } else {
+                // All 4 codes verified - complete transfer
+                document.querySelector(`.code-step[data-step="${step}"]`).classList.remove('active');
+                completeTransfer();
+            }
+        } else {
+            errorEl.textContent = `❌ Invalid ${STEP_NAMES[step]} code. Please try again.`;
+            errorEl.style.display = 'block';
+            input.classList.add('error');
+            input.value = '';
+            input.focus();
+            showToast(`❌ Invalid ${STEP_NAMES[step]} code.`, 'error');
+        }
+    }
+
+    async function saveVerificationProgress(step) {
+        const transactionId = document.getElementById('pendingTransactionId').value;
+        if (!transactionId) return;
+
+        try {
+            await fetch('/api/save-verification-progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    transaction_id: transactionId,
+                    codes_verified: step
+                })
+            });
+        } catch (error) {
+            console.error('Error saving progress:', error);
+        }
+    }
+
+    async function completeTransfer() {
+        const transactionId = document.getElementById('pendingTransactionId').value;
+        const progressStatus = document.getElementById('progressStatus');
+        progressStatus.className = 'progress-status completed';
+        progressStatus.textContent = '✅ Completed';
+
+        try {
+            const response = await fetch('/api/verify-international-transfer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    transaction_id: transactionId,
+                    codes_verified: verifiedSteps
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.querySelectorAll('.code-step').forEach(el => el.classList.remove('active'));
+                document.getElementById('completionMessage').classList.add('show');
+                document.getElementById('verificationContainer').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+                showToast('🎉 All codes verified! Transfer submitted!', 'success');
+            } else {
+                showToast('❌ ' + data.error, 'error');
+            }
+        } catch (error) {
+            showToast('❌ Network error. Please try again.', 'error');
+        }
+    }
+
+    // ============================================
+    // TOAST NOTIFICATIONS
+    // ============================================
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+
+        const colors = {
+            success: '#0a7f42',
+            error: '#dc2626',
+            warning: '#f59e0b',
+            info: '#3b82f6'
+        };
+
+        toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        background: ${colors[type] || colors.info};
+        color: white;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        animation: slideUp 0.3s ease;
+        max-width: 400px;
+    `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    // ============================================
+    // SHOW/HIDE MESSAGES
+    // ============================================
+    function showMessage(message, type = 'info') {
+        const msgBox = document.getElementById('msgBox');
+        msgBox.textContent = message;
+        msgBox.className = 'msg-box';
+        msgBox.style.display = 'block';
+
+        if (type === 'error') {
+            msgBox.style.background = 'rgba(220,38,38,0.05)';
+            msgBox.style.color = 'var(--error)';
+            msgBox.style.borderColor = 'var(--error)';
+        } else if (type === 'success') {
+            msgBox.style.background = 'rgba(10,127,66,0.05)';
+            msgBox.style.color = 'var(--success)';
+            msgBox.style.borderColor = 'var(--success)';
+        } else {
+            msgBox.style.background = 'rgba(59,130,246,0.05)';
+            msgBox.style.color = 'var(--info)';
+            msgBox.style.borderColor = 'var(--info)';
+        }
+    }
+
+    function hideMessage() {
+        const msgBox = document.getElementById('msgBox');
+        msgBox.className = 'msg-box';
+        msgBox.style.display = 'none';
+    }
+
+    // ============================================
+    // SUBMIT TRANSFER
+    // ============================================
+    async function submitTransfer() {
+        hideMessage();
+        document.getElementById('resultContainer').style.display = 'none';
+        document.getElementById('verificationContainer').classList.remove('show');
+        resetVerification();
+
+        const pin = getPin();
+        if (!pin) {
+            document.getElementById('pinError').style.display = 'block';
+            document.getElementById('pinError').textContent = '❌ Please enter all 6 digits of your PIN.';
+            showMessage('Please enter your 6-digit transaction PIN.', 'error');
+            document.getElementById('pin1').focus();
+            return;
+        }
+        if (pin.length !== 6) {
+            document.getElementById('pinError').style.display = 'block';
+            document.getElementById('pinError').textContent = '❌ PIN must be exactly 6 digits.';
+            showMessage('PIN must be exactly 6 digits.', 'error');
+            return;
+        }
+
+        const transferType = document.getElementById('transferType').value;
+        const amount = parseFloat(document.getElementById('amount').value);
+        const description = document.getElementById('description').value.trim();
+
+        if (!amount || amount <= 0) {
+            showMessage('Please enter a valid amount greater than 0.', 'error');
+            return;
+        }
+
+        let requestData = { amount, description, transfer_type: transferType, pin: pin };
+
+        if (transferType === 'local') {
+            const receiver = document.getElementById('receiver').value.trim();
+            if (!receiver) { showMessage('Please enter a recipient username.', 'error'); return; }
+            requestData.receiver = receiver;
+        } else {
+            const bankName = document.getElementById('bankName').value.trim();
+            const accountHolder = document.getElementById('accountHolder').value.trim();
+            const accountNumber = document.getElementById('accountNumber').value.trim();
+            const bankCountry = document.getElementById('bankCountry').value;
+            const swiftCode = document.getElementById('swiftCode').value.trim();
+
+            if (!bankName) { showMessage('Please enter the bank name.', 'error'); return; }
+            if (!accountHolder) { showMessage('Please enter the account holder name.', 'error'); return; }
+            if (!accountNumber) { showMessage('Please enter the account number.', 'error'); return; }
+            if (!bankCountry) { showMessage('Please select the bank country.', 'error'); return; }
+
+            requestData.bank_name = bankName;
+            requestData.account_holder = accountHolder;
+            requestData.account_number = accountNumber;
+            requestData.bank_country = bankCountry;
+            requestData.swift_code = swiftCode;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Processing...';
+        loadingSpinner.style.display = 'block';
+
+        try {
+            const response = await fetch('{{ url_for("api.create_transaction") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            });
+            const data = await response.json();
+
+            loadingSpinner.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = transferType === 'international' ? '🌍 Submit International Transfer' : '💸 Submit Transfer for Approval';
+
+            if (response.ok) {
+                if (transferType === 'international') {
+                    document.getElementById('pendingTransactionId').value = data.transaction_id;
+                    document.getElementById('transactionRef').textContent = `Transaction: #${data.transaction_id}`;
+                    document.getElementById('verificationContainer').classList.add('show');
+                    document.getElementById('code1').focus();
+                    updateProgressInfo();
+                    showMessage('✅ International transfer created! Please enter the 4 verification codes to complete.', 'success');
+                    document.getElementById('transferForm').style.opacity = '0.5';
+                    document.getElementById('submitBtn').style.display = 'none';
+                    document.getElementById('verificationContainer').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    document.getElementById('resultContainer').style.display = 'block';
+                    document.getElementById('resultMessage').textContent = '✅ ' + data.message;
+                    document.getElementById('transferForm').reset();
+                    clearPin();
+                    updateBalance();
+                }
+            } else {
+                showMessage('❌ ' + (data.error || 'Something went wrong'), 'error');
+                if (data.error && data.error.includes('PIN')) {
+                    document.getElementById('pinError').style.display = 'block';
+                    document.getElementById('pinError').textContent = '❌ ' + data.error;
+                    document.getElementById('pin1').focus();
+                }
+            }
+        } catch (error) {
+            loadingSpinner.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = transferType === 'international' ? '🌍 Submit International Transfer' : '💸 Submit Transfer for Approval';
+            showMessage('❌ Network error. Please try again.', 'error');
+        }
+    }
+
+    // ============================================
+    // CHECK FOR PENDING VERIFICATION ON PAGE LOAD
+    // ============================================
+    async function checkPendingVerification() {
+        try {
+            const response = await fetch('/api/check-pending-verification');
+            const data = await response.json();
+
+            if (data.has_pending && data.transaction_id) {
+                document.getElementById('pendingTransactionId').value = data.transaction_id;
+                document.getElementById('transactionRef').textContent = `Transaction: #${data.transaction_id}`;
+                document.getElementById('verificationContainer').classList.add('show');
+
+                const codesVerified = data.codes_verified || 0;
+                if (codesVerified > 0) {
+                    for (let i = 1; i <= codesVerified; i++) {
+                        const dot = document.querySelector(`.step-dot[data-step="${i}"]`);
+                        dot.classList.remove('active');
+                        dot.classList.add('completed');
+                        const stepEl = document.querySelector(`.code-step[data-step="${i}"]`);
+                        if (stepEl) {
+                            stepEl.querySelector('.code-success').style.display = 'block';
+                            const input = stepEl.querySelector('.code-input');
+                            input.value = '✅ Verified';
+                            input.disabled = true;
+                        }
+                    }
+                    const nextStep = codesVerified + 1;
+                    if (nextStep <= 4) {
+                        document.querySelector(`.step-dot[data-step="${nextStep}"]`).classList.add('active');
+                        document.querySelector(`.code-step[data-step="${nextStep}"]`).classList.add('active');
+                        currentStep = nextStep;
+                        updateProgressInfo();
+                        document.getElementById(`code${nextStep}`).focus();
+                    } else {
+                        completeTransfer();
+                    }
+                } else {
+                    currentStep = 1;
+                    updateProgressInfo();
+                    document.getElementById('code1').focus();
+                }
+
+                document.getElementById('transferForm').style.opacity = '0.5';
+                document.getElementById('submitBtn').style.display = 'none';
+
+                showToast('📋 Continuing your pending international transfer.', 'info');
+            }
+        } catch (error) {
+            console.error('Error checking pending verification:', error);
+        }
+    }
+
+    // ============================================
+    // UPDATE BALANCE
+    // ============================================
+    async function updateBalance() {
+        try {
+            const response = await fetch('{{ url_for("api.get_balance") }}');
+            const data = await response.json();
+            if (data.balance !== undefined) {
+                document.getElementById('availableBalance').textContent = '£' + data.balance.toFixed(2);
+            }
+        } catch (e) { console.error('Failed to update balance:', e); }
+    }
+
+    // ============================================
+    // INITIALIZE ON PAGE LOAD
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function () {
+        checkPendingVerification();
+    });
+
+    // Add slideUp animation for toasts
+    const style = document.createElement('style');
+    style.textContent = `
+    @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+`;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

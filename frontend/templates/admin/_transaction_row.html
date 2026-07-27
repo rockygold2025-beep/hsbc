@@ -1,0 +1,24 @@
+{% if transactions %}
+{% for t in transactions %}
+<tr>
+    <td>#{{ t.id }}</td>
+    <td>{{ t.sender.username }}</td>
+    <td>{{ t.receiver.username }}</td>
+    <td>£{{ "%.2f"|format(t.amount) }}</td>
+    <td>{{ t.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+    <td><span class="status-badge status-{{ t.status }}">{{ t.status }}</span></td>
+    <td>
+        {% if t.status == 'pending' %}
+        <button class="btn-sm btn-approve" onclick="approveTxn({{ t.id }})">✅ Approve</button>
+        <button class="btn-sm btn-reject" onclick="rejectTxn({{ t.id }})">❌ Reject</button>
+        {% else %}
+        <span style="opacity:0.5;">Processed</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+{% else %}
+<tr>
+    <td colspan="7" class="text-center" style="padding:30px; opacity:0.6;">No transactions found</td>
+</tr>
+{% endif %}

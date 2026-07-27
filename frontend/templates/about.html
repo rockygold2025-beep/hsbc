@@ -1,0 +1,666 @@
+{% extends "base.html" %}
+
+{% block title %}About Us | HSBC Bank{% endblock %}
+
+{% block head %}
+<style>
+    /* ============================================
+       HERO SECTION
+    ============================================ */
+    .about-hero {
+        background: linear-gradient(135deg, #001F5B 0%, #00337C 50%, #004A9E 100%);
+        color: var(--primary-white);
+        padding: 80px 0 60px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .about-hero::before {
+        content: '🏦';
+        position: absolute;
+        right: -50px;
+        bottom: -50px;
+        font-size: 200px;
+        opacity: 0.05;
+    }
+
+    .about-hero h1 {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .about-hero p {
+        font-size: 18px;
+        opacity: 0.85;
+        max-width: 700px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+        line-height: 1.7;
+    }
+
+    /* ============================================
+       OUR STORY SECTION
+    ============================================ */
+    .story-section {
+        padding: 70px 0;
+        background: var(--primary-white);
+    }
+
+    .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        align-items: center;
+    }
+
+    .story-content h2 {
+        font-size: 36px;
+        color: var(--primary-dark-blue);
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+
+    .story-content h2 .highlight {
+        color: var(--accent-gold);
+    }
+
+    .story-content p {
+        font-size: 16px;
+        line-height: 1.8;
+        opacity: 0.8;
+        margin-bottom: 20px;
+    }
+
+    .story-image {
+        background: var(--light-grey);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        text-align: center;
+        border: 1px solid var(--border-light);
+    }
+
+    .story-image .year-badge {
+        font-size: 72px;
+        font-weight: 800;
+        color: var(--accent-gold);
+        display: block;
+        line-height: 1;
+    }
+
+    .story-image .year-label {
+        font-size: 18px;
+        color: var(--primary-dark-blue);
+        font-weight: 600;
+    }
+
+    .story-image .flag-icon {
+        font-size: 60px;
+        display: block;
+        margin-top: 15px;
+    }
+
+    /* ============================================
+       VALUES SECTION
+    ============================================ */
+    .values-section {
+        padding: 70px 0;
+        background: var(--light-grey);
+    }
+
+    .section-header {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 50px;
+    }
+
+    .section-header h2 {
+        font-size: 36px;
+        color: var(--primary-dark-blue);
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .section-header p {
+        font-size: 17px;
+        opacity: 0.7;
+        line-height: 1.7;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+    }
+
+    .value-card {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 30px 25px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        border-bottom: 4px solid transparent;
+    }
+
+    .value-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+        border-bottom-color: var(--accent-gold);
+    }
+
+    .value-card .value-icon {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    .value-card h3 {
+        color: var(--primary-dark-blue);
+        font-size: 20px;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .value-card p {
+        font-size: 14px;
+        opacity: 0.75;
+        line-height: 1.6;
+    }
+
+    /* ============================================
+       STATS SECTION
+    ============================================ */
+    .stats-section {
+        padding: 60px 0;
+        background: var(--primary-dark-blue);
+        color: var(--primary-white);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+        text-align: center;
+    }
+
+    .stat-item .stat-number {
+        font-size: 40px;
+        font-weight: 800;
+        color: var(--accent-gold);
+        margin-bottom: 5px;
+    }
+
+    .stat-item .stat-label {
+        font-size: 15px;
+        opacity: 0.7;
+    }
+
+    /* ============================================
+       MILESTONES SECTION
+    ============================================ */
+    .milestones-section {
+        padding: 70px 0;
+        background: var(--primary-white);
+    }
+
+    .timeline {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        padding-left: 40px;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--accent-gold);
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 40px;
+        padding-left: 30px;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -32px;
+        top: 5px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--accent-gold);
+        border: 3px solid var(--primary-white);
+        box-shadow: 0 0 0 3px var(--accent-gold);
+    }
+
+    .timeline-item .year {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--accent-gold);
+        margin-bottom: 5px;
+    }
+
+    .timeline-item h4 {
+        font-size: 18px;
+        color: var(--primary-dark-blue);
+        margin-bottom: 5px;
+    }
+
+    .timeline-item p {
+        font-size: 14px;
+        opacity: 0.75;
+        line-height: 1.6;
+    }
+
+    /* ============================================
+       LEADERSHIP SECTION
+    ============================================ */
+    .leadership-section {
+        padding: 70px 0;
+        background: var(--light-grey);
+    }
+
+    .leadership-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 30px;
+    }
+
+    .leader-card {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 25px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    .leader-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .leader-card .leader-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0 auto 15px;
+    }
+
+    .leader-card h4 {
+        color: var(--primary-dark-blue);
+        font-size: 17px;
+        margin-bottom: 3px;
+        font-weight: 700;
+    }
+
+    .leader-card .leader-title {
+        font-size: 13px;
+        opacity: 0.7;
+    }
+
+    /* ============================================
+       CTA SECTION
+    ============================================ */
+    .cta-section {
+        padding: 60px 0;
+        background: linear-gradient(135deg, #001F5B 0%, #00337C 100%);
+        color: var(--primary-white);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '🌍';
+        position: absolute;
+        right: -30px;
+        bottom: -30px;
+        font-size: 200px;
+        opacity: 0.05;
+    }
+
+    .cta-section h2 {
+        font-size: 34px;
+        font-weight: 800;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-section p {
+        font-size: 17px;
+        opacity: 0.8;
+        max-width: 600px;
+        margin: 0 auto 30px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-section .btn-primary {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        padding: 15px 40px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-section .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 992px) {
+        .story-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .about-hero h1 {
+            font-size: 36px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .about-hero h1 {
+            font-size: 30px;
+        }
+
+        .about-hero p {
+            font-size: 16px;
+        }
+
+        .story-content h2 {
+            font-size: 28px;
+        }
+
+        .section-header h2 {
+            font-size: 28px;
+        }
+
+        .values-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .leadership-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cta-section h2 {
+            font-size: 26px;
+        }
+
+        .cta-section p {
+            font-size: 15px;
+        }
+
+        .timeline {
+            padding-left: 20px;
+        }
+
+        .timeline-item {
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            left: -22px;
+            width: 12px;
+            height: 12px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .about-hero h1 {
+            font-size: 26px;
+        }
+
+        .story-image .year-badge {
+            font-size: 48px;
+        }
+
+        .stat-item .stat-number {
+            font-size: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ============================================
+HERO SECTION
+============================================ -->
+<section class="about-hero animate-fade-in-down">
+    <div class="container">
+        <h1>About HSBC Bank</h1>
+        <p>For over 160 years, HSBC has been connecting people, businesses, and communities to a world of opportunity.
+            We are one of the world's largest and most trusted financial institutions.</p>
+    </div>
+</section>
+
+<!-- ============================================
+OUR STORY
+============================================ -->
+<section class="story-section">
+    <div class="container">
+        <div class="story-grid">
+            <div class="story-content animate-fade-in-up delay-1">
+                <h2>Our <span class="highlight">Story</span></h2>
+                <p>HSBC was founded in 1865 in Hong Kong and Shanghai to finance trade between Europe and Asia. The name
+                    "HSBC" is derived from the initials of the Hongkong and Shanghai Banking Corporation, which was
+                    established by a Scottish banker named Thomas Sutherland.</p>
+                <p>Today, we have grown into one of the world's largest banking and financial services organisations,
+                    with a presence in over 60 countries and territories. We serve more than 40 million customers
+                    worldwide, ranging from individuals and families to businesses and governments.</p>
+                <p>Our headquarters are in London, United Kingdom, and we are listed on the London, Hong Kong, New York,
+                    and Paris stock exchanges.</p>
+            </div>
+            <div class="story-image animate-fade-in-up delay-2">
+                <span class="year-badge">1865</span>
+                <span class="year-label">Founded in Hong Kong</span>
+                <span class="flag-icon">🇭🇰 → 🇬🇧</span>
+                <p style="margin-top: 15px; font-size: 14px; opacity: 0.6;">From Hong Kong to the World</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+OUR VALUES
+============================================ -->
+<section class="values-section">
+    <div class="container">
+        <div class="section-header animate-fade-in-up">
+            <h2>Our Core Values</h2>
+            <p>These values guide everything we do — from how we treat our customers to how we work together as a team.
+            </p>
+        </div>
+        <div class="values-grid">
+            <div class="value-card animate-fade-in-up delay-1">
+                <span class="value-icon">🤝</span>
+                <h3>Trustworthy</h3>
+                <p>We act with integrity and transparency, building trust with our customers, colleagues, and
+                    communities.</p>
+            </div>
+            <div class="value-card animate-fade-in-up delay-2">
+                <span class="value-icon">🌍</span>
+                <h3>Open & Connected</h3>
+                <p>We embrace diversity and inclusion, connecting people and ideas across cultures and borders.</p>
+            </div>
+            <div class="value-card animate-fade-in-up delay-3">
+                <span class="value-icon">💡</span>
+                <h3>Decisive & Courageous</h3>
+                <p>We make bold decisions and take calculated risks to drive innovation and growth.</p>
+            </div>
+            <div class="value-card animate-fade-in-up delay-4">
+                <span class="value-icon">⭐</span>
+                <h3>Accountable</h3>
+                <p>We take ownership of our actions and deliver on our commitments to customers and stakeholders.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+STATISTICS
+============================================ -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item animate-fade-in-up delay-1">
+                <div class="stat-number">40M+</div>
+                <div class="stat-label">Customers Worldwide</div>
+            </div>
+            <div class="stat-item animate-fade-in-up delay-2">
+                <div class="stat-number">£2.5T</div>
+                <div class="stat-label">Assets Under Management</div>
+            </div>
+            <div class="stat-item animate-fade-in-up delay-3">
+                <div class="stat-number">60+</div>
+                <div class="stat-label">Countries & Territories</div>
+            </div>
+            <div class="stat-item animate-fade-in-up delay-4">
+                <div class="stat-number">160+</div>
+                <div class="stat-label">Years of Banking Heritage</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+MILESTONES / TIMELINE
+============================================ -->
+<section class="milestones-section">
+    <div class="container">
+        <div class="section-header animate-fade-in-up">
+            <h2>Our Journey</h2>
+            <p>Key milestones that have shaped HSBC into the bank it is today.</p>
+        </div>
+        <div class="timeline">
+            <div class="timeline-item animate-fade-in-up delay-1">
+                <div class="year">1865</div>
+                <h4>Foundation</h4>
+                <p>HSBC is founded in Hong Kong and Shanghai to finance trade between Europe and Asia.</p>
+            </div>
+            <div class="timeline-item animate-fade-in-up delay-2">
+                <div class="year">1959</div>
+                <h4>Expansion into the UK</h4>
+                <p>HSBC acquires the British Bank of the Middle East, expanding its presence into the UK.</p>
+            </div>
+            <div class="timeline-item animate-fade-in-up delay-3">
+                <div class="year">1992</div>
+                <h4>Global Growth</h4>
+                <p>HSBC acquires Midland Bank in the UK, significantly expanding its global footprint.</p>
+            </div>
+            <div class="timeline-item animate-fade-in-up delay-4">
+                <div class="year">2010</div>
+                <h4>Digital Transformation</h4>
+                <p>HSBC launches its online and mobile banking platforms, making banking more accessible.</p>
+            </div>
+            <div class="timeline-item animate-fade-in-up delay-5">
+                <div class="year">2024</div>
+                <h4>Innovation & Sustainability</h4>
+                <p>HSBC commits to net-zero carbon emissions by 2050 and continues to invest in fintech innovation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+LEADERSHIP
+============================================ -->
+<section class="leadership-section">
+    <div class="container">
+        <div class="section-header animate-fade-in-up">
+            <h2>Our Leadership</h2>
+            <p>Meet the team leading HSBC into the future.</p>
+        </div>
+        <div class="leadership-grid">
+            <div class="leader-card animate-fade-in-up delay-1">
+                <div class="leader-avatar">NG</div>
+                <h4>Noel Quinn</h4>
+                <div class="leader-title">Group Chief Executive</div>
+            </div>
+            <div class="leader-card animate-fade-in-up delay-2">
+                <div class="leader-avatar">ME</div>
+                <h4>Mark Evans</h4>
+                <div class="leader-title">Chief Financial Officer</div>
+            </div>
+            <div class="leader-card animate-fade-in-up delay-3">
+                <div class="leader-avatar">SS</div>
+                <h4>Sarah Smith</h4>
+                <div class="leader-title">Head of UK Banking</div>
+            </div>
+            <div class="leader-card animate-fade-in-up delay-4">
+                <div class="leader-avatar">JR</div>
+                <h4>James Robinson</h4>
+                <div class="leader-title">Chief Technology Officer</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+CTA SECTION
+============================================ -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="animate-fade-in-down">Join HSBC Today</h2>
+        <p class="animate-fade-in-up delay-1">Experience world-class banking with security, reliability, and innovation
+            at its best. Open your account today.</p>
+        {% if current_user.is_authenticated %}
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('admin.dashboard') }}" class="btn-primary animate-fade-in-up delay-2">
+            📊 Go to Admin Panel
+        </a>
+        {% else %}
+        <a href="{{ url_for('user.dashboard') }}" class="btn-primary animate-fade-in-up delay-2">
+            📊 Go to Dashboard
+        </a>
+        {% endif %}
+        {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn-primary animate-fade-in-up delay-2">
+            🚀 Open Your Account
+        </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

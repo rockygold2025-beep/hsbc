@@ -1,0 +1,1496 @@
+{% extends "base.html" %}
+
+{% block title %}Register | HSBC Bank{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+<style>
+    /* ============================================
+       REGISTRATION WIZARD
+    ============================================ */
+    .register-section {
+        padding: 40px 0;
+        background: var(--light-grey);
+        min-height: calc(100vh - 200px);
+    }
+
+    .register-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+
+    .register-header {
+        background: var(--primary-dark-blue);
+        color: var(--primary-white);
+        padding: 30px 35px;
+        text-align: center;
+    }
+
+    .register-header h1 {
+        font-size: 28px;
+        margin-bottom: 5px;
+    }
+
+    .register-header p {
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
+    /* Progress Bar */
+    .progress-wrapper {
+        padding: 25px 35px;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .progress-steps::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 30px;
+        right: 30px;
+        height: 3px;
+        background: var(--border-light);
+        z-index: 0;
+    }
+
+    .step-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+    }
+
+    .step-indicator .step-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--border-light);
+        color: var(--dark-grey);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        transition: var(--transition);
+        border: 3px solid transparent;
+    }
+
+    .step-indicator.active .step-circle {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 5px rgba(212, 175, 55, 0.2);
+    }
+
+    .step-indicator.completed .step-circle {
+        background: var(--success);
+        color: white;
+        border-color: var(--success);
+    }
+
+    .step-indicator .step-label {
+        font-size: 11px;
+        margin-top: 6px;
+        opacity: 0.6;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .step-indicator.active .step-label {
+        opacity: 1;
+        color: var(--primary-dark-blue);
+    }
+
+    .step-indicator.completed .step-label {
+        opacity: 0.8;
+        color: var(--success);
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: var(--border-light);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: var(--accent-gold);
+        transition: width 0.5s ease;
+        border-radius: 3px;
+    }
+
+    /* Form Steps */
+    .form-step {
+        display: none;
+        padding: 30px 35px;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .form-step.active {
+        display: block;
+    }
+
+    .form-step h3 {
+        color: var(--primary-dark-blue);
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
+
+    .form-step .step-description {
+        font-size: 14px;
+        opacity: 0.7;
+        margin-bottom: 25px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 13px;
+        color: var(--dark-grey);
+    }
+
+    .form-group label .required {
+        color: var(--error);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        transition: var(--transition);
+        background: var(--primary-white);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
+    .form-group input.error,
+    .form-group select.error {
+        border-color: var(--error);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+    }
+
+    .form-group input.success,
+    .form-group select.success {
+        border-color: var(--success);
+        box-shadow: 0 0 0 3px rgba(10, 127, 66, 0.15);
+    }
+
+    .form-group .hint {
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 4px;
+    }
+
+    .form-group .error-message {
+        color: var(--error);
+        font-size: 12px;
+        margin-top: 4px;
+        display: none;
+    }
+
+    .form-group .error-message.show {
+        display: block;
+    }
+
+    /* Password Strength */
+    .password-strength {
+        display: flex;
+        gap: 5px;
+        margin-top: 5px;
+    }
+
+    .password-strength .bar {
+        height: 4px;
+        flex: 1;
+        background: var(--border-light);
+        border-radius: 2px;
+        transition: var(--transition);
+    }
+
+    .password-strength .bar.weak {
+        background: var(--error);
+    }
+
+    .password-strength .bar.medium {
+        background: var(--warning);
+    }
+
+    .password-strength .bar.strong {
+        background: var(--success);
+    }
+
+    .password-strength .bar.very-strong {
+        background: var(--success);
+    }
+
+    .strength-text {
+        font-size: 12px;
+        margin-top: 4px;
+        font-weight: 600;
+    }
+
+    .strength-text.weak {
+        color: var(--error);
+    }
+
+    .strength-text.medium {
+        color: var(--warning);
+    }
+
+    .strength-text.strong {
+        color: var(--success);
+    }
+
+    /* File Upload */
+    .upload-zone {
+        border: 2px dashed var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .upload-zone:hover {
+        border-color: var(--accent-gold);
+        background: rgba(212, 175, 55, 0.03);
+    }
+
+    .upload-zone.dragover {
+        border-color: var(--accent-gold);
+        background: rgba(212, 175, 55, 0.05);
+    }
+
+    .upload-zone .upload-icon {
+        font-size: 40px;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .upload-zone .upload-text {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .upload-zone .upload-subtext {
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 5px;
+    }
+
+    .upload-zone input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .upload-preview {
+        display: none;
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--light-grey);
+        border-radius: var(--radius-md);
+        align-items: center;
+        gap: 10px;
+    }
+
+    .upload-preview.show {
+        display: flex;
+    }
+
+    .upload-preview .preview-icon {
+        font-size: 24px;
+    }
+
+    .upload-preview .preview-info {
+        flex: 1;
+    }
+
+    .upload-preview .preview-info .file-name {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .upload-preview .preview-info .file-size {
+        font-size: 12px;
+        opacity: 0.6;
+    }
+
+    .upload-preview .remove-file {
+        background: none;
+        border: none;
+        color: var(--error);
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    /* Navigation Buttons */
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 35px;
+        border-top: 1px solid var(--border-light);
+        background: var(--light-grey);
+    }
+
+    .btn-prev {
+        padding: 10px 25px;
+        background: var(--light-grey);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-prev:hover {
+        background: var(--border-light);
+    }
+
+    .btn-next {
+        padding: 10px 30px;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-next:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-submit {
+        padding: 10px 30px;
+        background: var(--success);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    /* Checkbox Group */
+    .checkbox-group {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        cursor: pointer;
+    }
+
+    .checkbox-group label {
+        font-weight: normal;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .checkbox-group label a {
+        color: var(--accent-gold);
+        text-decoration: none;
+    }
+
+    .checkbox-group label a:hover {
+        text-decoration: underline;
+    }
+
+    /* Success Message */
+    .success-message {
+        text-align: center;
+        padding: 50px 35px;
+    }
+
+    .success-message .success-icon {
+        font-size: 80px;
+        display: block;
+        margin-bottom: 20px;
+    }
+
+    .success-message h2 {
+        color: var(--success);
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .success-message p {
+        opacity: 0.7;
+        font-size: 16px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .success-message .ref-number {
+        display: inline-block;
+        background: var(--light-grey);
+        padding: 10px 25px;
+        border-radius: var(--radius-md);
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary-dark-blue);
+        margin: 20px 0;
+        font-family: monospace;
+        letter-spacing: 1px;
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 992px) {
+        .register-wrapper {
+            max-width: 100%;
+        }
+
+        .form-step {
+            padding: 25px;
+        }
+
+        .progress-wrapper {
+            padding: 20px 25px;
+        }
+
+        .form-navigation {
+            padding: 15px 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .form-navigation .btn-prev,
+        .form-navigation .btn-next,
+        .form-navigation .btn-submit {
+            flex: 1;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .register-header h1 {
+            font-size: 22px;
+        }
+
+        .progress-steps {
+            overflow-x: auto;
+            gap: 10px;
+        }
+
+        .step-indicator .step-label {
+            font-size: 10px;
+        }
+
+        .form-step {
+            padding: 20px;
+        }
+
+        .form-navigation {
+            flex-direction: column;
+        }
+
+        .form-navigation .btn-prev,
+        .form-navigation .btn-next,
+        .form-navigation .btn-submit {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .register-header {
+            padding: 20px;
+        }
+
+        .register-header h1 {
+            font-size: 20px;
+        }
+
+        .progress-wrapper {
+            padding: 15px;
+        }
+
+        .step-indicator .step-circle {
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+        }
+
+        .form-step {
+            padding: 15px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+        }
+
+        .form-group input,
+        .form-group select {
+            font-size: 13px;
+            padding: 9px 12px;
+        }
+
+        .success-message h2 {
+            font-size: 22px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="register-section">
+    <div class="container">
+        <div class="register-wrapper">
+            <!-- Header -->
+            <div class="register-header">
+                <h1>📝 Create Your Account</h1>
+                <p>Complete all steps to open your HSBC account</p>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-wrapper">
+                <div class="progress-steps" id="progressSteps">
+                    <div class="step-indicator active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <span class="step-label">Personal</span>
+                    </div>
+                    <div class="step-indicator" data-step="2">
+                        <div class="step-circle">2</div>
+                        <span class="step-label">Contact</span>
+                    </div>
+                    <div class="step-indicator" data-step="3">
+                        <div class="step-circle">3</div>
+                        <span class="step-label">Employment</span>
+                    </div>
+                    <div class="step-indicator" data-step="4">
+                        <div class="step-circle">4</div>
+                        <span class="step-label">Account</span>
+                    </div>
+                    <div class="step-indicator" data-step="5">
+                        <div class="step-circle">5</div>
+                        <span class="step-label">Security</span>
+                    </div>
+                    <div class="step-indicator" data-step="6">
+                        <div class="step-circle">6</div>
+                        <span class="step-label">Documents</span>
+                    </div>
+                    <div class="step-indicator" data-step="7">
+                        <div class="step-circle">7</div>
+                        <span class="step-label">Review</span>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressFill" style="width: 14.28%;"></div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="registrationForm" method="POST" action="{{ url_for('auth.register') }}"
+                enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                <input type="hidden" name="current_step" id="currentStep" value="1">
+
+                <!-- STEP 1: Personal Information -->
+                <div class="form-step active" data-step="1">
+                    <h3>👤 Personal Information</h3>
+                    <p class="step-description">Please provide your personal details as they appear on your official
+                        identification.</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Title <span class="required">*</span></label>
+                            <select name="title" required>
+                                <option value="">Select...</option>
+                                <option value="Mr">Mr</option>
+                                <option value="Mrs">Mrs</option>
+                                <option value="Miss">Miss</option>
+                                <option value="Ms">Ms</option>
+                                <option value="Dr">Dr</option>
+                                <option value="Prof">Prof</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>First Name <span class="required">*</span></label>
+                            <input type="text" name="first_name" required placeholder="Enter your first name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Middle Name</label>
+                            <input type="text" name="middle_name" placeholder="Enter your middle name (optional)">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name <span class="required">*</span></label>
+                            <input type="text" name="last_name" required placeholder="Enter your last name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date of Birth <span class="required">*</span></label>
+                            <input type="date" name="date_of_birth" required>
+                            <div class="hint">You must be 18 years or older</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender <span class="required">*</span></label>
+                            <select name="gender" required>
+                                <option value="">Select...</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Non-Binary">Non-Binary</option>
+                                <option value="Prefer Not to Say">Prefer Not to Say</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Marital Status</label>
+                            <select name="marital_status">
+                                <option value="">Select...</option>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                                <option value="Separated">Separated</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality <span class="required">*</span></label>
+                            <select name="nationality" required>
+                                <option value="">Select...</option>
+                                <option value="British">British</option>
+                                <option value="American">American</option>
+                                <option value="Canadian">Canadian</option>
+                                <option value="Australian">Australian</option>
+                                <option value="Irish">Irish</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Contact Information -->
+                <div class="form-step" data-step="2">
+                    <h3>📍 Contact Information</h3>
+                    <p class="step-description">Where can we reach you?</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Username <span class="required">*</span></label>
+                            <input type="text" name="username" required placeholder="Choose a unique username">
+                            <div class="hint">3-30 characters, letters and numbers only</div>
+                            <div class="error-message" id="usernameError">Username is already taken</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address <span class="required">*</span></label>
+                            <input type="email" name="email" required placeholder="Enter your email address">
+                            <div class="hint">We'll send you account updates here</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mobile Phone Number <span class="required">*</span></label>
+                            <input type="tel" name="phone" required placeholder="+44 7000 000000">
+                            <div class="hint">We'll send verification codes here</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Alternative Phone Number</label>
+                            <input type="tel" name="alt_phone" placeholder="+44 7000 000000 (optional)">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Country of Residence <span class="required">*</span></label>
+                            <select name="country_of_residence" required>
+                                <option value="">Select...</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="United States">United States</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>City <span class="required">*</span></label>
+                            <input type="text" name="city" required placeholder="Enter your city">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>County/State <span class="required">*</span></label>
+                            <input type="text" name="county_state" required placeholder="Enter your county or state">
+                        </div>
+                        <div class="form-group">
+                            <label>Postcode/ZIP Code <span class="required">*</span></label>
+                            <input type="text" name="postcode" required placeholder="Enter your postcode">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Residential Address <span class="required">*</span></label>
+                        <textarea name="address" rows="3" required placeholder="Enter your full address"></textarea>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Employment Information -->
+                <div class="form-step" data-step="3">
+                    <h3>💼 Employment Information</h3>
+                    <p class="step-description">Tell us about your employment and income.</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Employment Status <span class="required">*</span></label>
+                            <select name="employment_status" required>
+                                <option value="">Select...</option>
+                                <option value="Employed Full-Time">Employed Full-Time</option>
+                                <option value="Employed Part-Time">Employed Part-Time</option>
+                                <option value="Self-Employed">Self-Employed</option>
+                                <option value="Student">Student</option>
+                                <option value="Retired">Retired</option>
+                                <option value="Unemployed">Unemployed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Profession <span class="required">*</span></label>
+                            <input type="text" name="profession" required placeholder="Enter your profession">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Employer Name</label>
+                            <input type="text" name="employer_name" placeholder="Enter your employer's name">
+                        </div>
+                        <div class="form-group">
+                            <label>Employer Address</label>
+                            <input type="text" name="employer_address" placeholder="Enter employer's address">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Annual Income Range <span class="required">*</span></label>
+                            <select name="annual_income_range" required>
+                                <option value="">Select...</option>
+                                <option value="£0 - £10,000">£0 - £10,000</option>
+                                <option value="£10,001 - £25,000">£10,001 - £25,000</option>
+                                <option value="£25,001 - £50,000">£25,001 - £50,000</option>
+                                <option value="£50,001 - £75,000">£50,001 - £75,000</option>
+                                <option value="£75,001 - £100,000">£75,001 - £100,000</option>
+                                <option value="£100,001+">£100,001+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Source of Funds <span class="required">*</span></label>
+                            <select name="source_of_funds" required>
+                                <option value="">Select...</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Business Income">Business Income</option>
+                                <option value="Investments">Investments</option>
+                                <option value="Inheritance">Inheritance</option>
+                                <option value="Savings">Savings</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Account Information -->
+                <div class="form-step" data-step="4">
+                    <h3>🏦 Account Information</h3>
+                    <p class="step-description">Choose the account that best suits your needs.</p>
+
+                    <div class="form-group">
+                        <label>Account Type <span class="required">*</span></label>
+                        <select name="account_type" required>
+                            <option value="">Select account type...</option>
+                            <option value="Personal Current">Personal Current Account</option>
+                            <option value="Personal Savings">Personal Savings Account</option>
+                            <option value="Business Current">Business Current Account</option>
+                            <option value="Business Savings">Business Savings Account</option>
+                            <option value="Student Account">Student Account</option>
+                            <option value="Joint Account">Joint Account</option>
+                            <option value="Premier Account">Premier Account</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Preferred Currency <span class="required">*</span></label>
+                            <select name="preferred_currency" required>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                                <option value="AUD">AUD - Australian Dollar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Initial Deposit Amount</label>
+                            <input type="number" name="initial_deposit" step="0.01" min="0" placeholder="0.00">
+                            <div class="hint">Optional - Minimum £1.00</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Branch Selection <span class="required">*</span></label>
+                        <select name="branch_selection" required>
+                            <option value="">Select your preferred branch...</option>
+                            <option value="London - Canary Wharf">London - Canary Wharf</option>
+                            <option value="London - Oxford Street">London - Oxford Street</option>
+                            <option value="Manchester - City Centre">Manchester - City Centre</option>
+                            <option value="Birmingham - Bullring">Birmingham - Bullring</option>
+                            <option value="Edinburgh - Princes Street">Edinburgh - Princes Street</option>
+                            <option value="Glasgow - Buchanan Street">Glasgow - Buchanan Street</option>
+                            <option value="Liverpool - Lord Street">Liverpool - Lord Street</option>
+                            <option value="Online Only">Online Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Security -->
+                <div class="form-step" data-step="5">
+                    <h3>🔐 Security</h3>
+                    <p class="step-description">Create your login credentials and security questions.</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Login Password <span class="required">*</span></label>
+                            <input type="password" name="password" id="password" required
+                                placeholder="Min 12 characters">
+                            <div class="password-strength" id="passwordStrength">
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                            </div>
+                            <div class="strength-text" id="strengthText">Enter a strong password</div>
+                            <div class="hint">Min 12 chars: uppercase, lowercase, number, special</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password <span class="required">*</span></label>
+                            <input type="password" name="confirm_password" id="confirmPassword" required
+                                placeholder="Confirm your password">
+                            <div class="error-message" id="passwordMatchError">Passwords do not match</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>6-Digit Transaction PIN <span class="required">*</span></label>
+                            <input type="password" name="transaction_pin" id="transactionPin" required maxlength="6"
+                                pattern="[0-9]{6}" placeholder="Enter 6 digits">
+                            <div class="hint">Used to confirm transactions</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Transaction PIN <span class="required">*</span></label>
+                            <input type="password" name="confirm_pin" id="confirmPin" required maxlength="6"
+                                pattern="[0-9]{6}" placeholder="Confirm 6 digits">
+                            <div class="error-message" id="pinMatchError">PINs do not match</div>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 20px 0 15px;">Security Questions (Choose 3)</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Security Question 1 <span class="required">*</span></label>
+                            <select name="security_question_1" required>
+                                <option value="">Select a question...</option>
+                                <option value="What is your mother's maiden name?">What is your mother's maiden name?
+                                </option>
+                                <option value="What was your first pet's name?">What was your first pet's name?</option>
+                                <option value="What is your favourite book?">What is your favourite book?</option>
+                                <option value="Where did you go to school?">Where did you go to school?</option>
+                            </select>
+                            <input type="text" name="security_answer_1" placeholder="Your answer"
+                                style="margin-top:8px;" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Security Question 2 <span class="required">*</span></label>
+                            <select name="security_question_2" required>
+                                <option value="">Select a question...</option>
+                                <option value="What is your father's middle name?">What is your father's middle name?
+                                </option>
+                                <option value="What city were you born in?">What city were you born in?</option>
+                                <option value="What is your favourite movie?">What is your favourite movie?</option>
+                                <option value="What is your dream job?">What is your dream job?</option>
+                            </select>
+                            <input type="text" name="security_answer_2" placeholder="Your answer"
+                                style="margin-top:8px;" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Security Question 3 <span class="required">*</span></label>
+                        <select name="security_question_3" required>
+                            <option value="">Select a question...</option>
+                            <option value="What is your favourite food?">What is your favourite food?</option>
+                            <option value="What is your favourite holiday destination?">What is your favourite holiday
+                                destination?</option>
+                            <option value="What is your favourite colour?">What is your favourite colour?</option>
+                            <option value="What is your favourite song?">What is your favourite song?</option>
+                        </select>
+                        <input type="text" name="security_answer_3" placeholder="Your answer" style="margin-top:8px;"
+                            required>
+                    </div>
+                </div>
+
+                <!-- STEP 6: Documents & KYC -->
+                <div class="form-step" data-step="6">
+                    <h3>📄 Identity Verification (KYC)</h3>
+                    <p class="step-description">Upload your identification documents for verification.</p>
+
+                    <div class="form-group">
+                        <label>Primary Identification <span class="required">*</span></label>
+                        <select name="primary_id_type" required>
+                            <option value="">Select ID type...</option>
+                            <option value="Passport">Passport</option>
+                            <option value="UK Driving Licence">UK Driving Licence</option>
+                            <option value="National Identity Card">National Identity Card</option>
+                            <option value="Residence Permit">Residence Permit</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Front of Valid ID <span class="required">*</span></label>
+                            <div class="upload-zone" id="idFrontZone">
+                                <span class="upload-icon">📷</span>
+                                <div class="upload-text">Click or drag to upload</div>
+                                <div class="upload-subtext">JPG, PNG, PDF (Max 10MB)</div>
+                                <input type="file" name="id_front" accept=".jpg,.jpeg,.png,.pdf" required>
+                            </div>
+                            <div class="upload-preview" id="idFrontPreview">
+                                <span class="preview-icon">📄</span>
+                                <div class="preview-info">
+                                    <div class="file-name" id="idFrontName">file.jpg</div>
+                                    <div class="file-size" id="idFrontSize">0 KB</div>
+                                </div>
+                                <button type="button" class="remove-file" onclick="removeFile('idFront')">✕</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Back of Valid ID <span class="required">*</span></label>
+                            <div class="upload-zone" id="idBackZone">
+                                <span class="upload-icon">📷</span>
+                                <div class="upload-text">Click or drag to upload</div>
+                                <div class="upload-subtext">JPG, PNG, PDF (Max 10MB)</div>
+                                <input type="file" name="id_back" accept=".jpg,.jpeg,.png,.pdf" required>
+                            </div>
+                            <div class="upload-preview" id="idBackPreview">
+                                <span class="preview-icon">📄</span>
+                                <div class="preview-info">
+                                    <div class="file-name" id="idBackName">file.jpg</div>
+                                    <div class="file-size" id="idBackSize">0 KB</div>
+                                </div>
+                                <button type="button" class="remove-file" onclick="removeFile('idBack')">✕</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Selfie / Passport-style Photograph <span class="required">*</span></label>
+                        <div class="upload-zone" id="selfieZone">
+                            <span class="upload-icon">🤳</span>
+                            <div class="upload-text">Click or drag to upload</div>
+                            <div class="upload-subtext">JPG, PNG (Max 10MB)</div>
+                            <input type="file" name="selfie" accept=".jpg,.jpeg,.png" required>
+                        </div>
+                        <div class="upload-preview" id="selfiePreview">
+                            <span class="preview-icon">📄</span>
+                            <div class="preview-info">
+                                <div class="file-name" id="selfieName">selfie.jpg</div>
+                                <div class="file-size" id="selfieSize">0 KB</div>
+                            </div>
+                            <button type="button" class="remove-file" onclick="removeFile('selfie')">✕</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address Verification <span class="required">*</span></label>
+                        <select name="address_proof_type" required>
+                            <option value="">Select document...</option>
+                            <option value="Utility Bill">Utility Bill (last 3 months)</option>
+                            <option value="Bank Statement">Bank Statement (last 3 months)</option>
+                            <option value="Council Tax Bill">Council Tax Bill</option>
+                            <option value="Government Letter">Government Letter</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="upload-zone" id="addressProofZone">
+                            <span class="upload-icon">📄</span>
+                            <div class="upload-text">Click or drag to upload</div>
+                            <div class="upload-subtext">JPG, PNG, PDF (Max 10MB)</div>
+                            <input type="file" name="address_proof" accept=".jpg,.jpeg,.png,.pdf" required>
+                        </div>
+                        <div class="upload-preview" id="addressProofPreview">
+                            <span class="preview-icon">📄</span>
+                            <div class="preview-info">
+                                <div class="file-name" id="addressProofName">file.pdf</div>
+                                <div class="file-size" id="addressProofSize">0 KB</div>
+                            </div>
+                            <button type="button" class="remove-file" onclick="removeFile('addressProof')">✕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 7: Review & Submit -->
+                <div class="form-step" data-step="7">
+                    <h3>✅ Review & Submit</h3>
+                    <p class="step-description">Please review your information before submitting.</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>National Insurance Number</label>
+                            <input type="text" name="national_insurance" placeholder="AB 12 34 56 C">
+                            <div class="hint">UK residents only</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tax Residency Country</label>
+                            <select name="tax_residency_country">
+                                <option value="">Select...</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="United States">United States</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Tax Identification Number (if applicable)</label>
+                        <input type="text" name="tax_id" placeholder="Enter your TIN">
+                    </div>
+
+                    <h4 style="margin: 20px 0 15px;">📋 Declarations</h4>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="is_pep" id="isPep">
+                        <label for="isPep">I am a Politically Exposed Person (PEP)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="is_us_person" id="isUsPerson">
+                        <label for="isUsPerson">I am a U.S. Person (FATCA Declaration)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="crs_declaration" id="crsDeclaration">
+                        <label for="crsDeclaration">I confirm the CRS (Common Reporting Standard) declaration</label>
+                    </div>
+
+                    <h4 style="margin: 20px 0 15px;">Emergency Contact</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" name="emergency_name" required placeholder="Full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Relationship <span class="required">*</span></label>
+                            <select name="emergency_relationship" required>
+                                <option value="">Select...</option>
+                                <option value="Spouse">Spouse</option>
+                                <option value="Partner">Partner</option>
+                                <option value="Parent">Parent</option>
+                                <option value="Sibling">Sibling</option>
+                                <option value="Child">Child</option>
+                                <option value="Friend">Friend</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone Number <span class="required">*</span></label>
+                            <input type="tel" name="emergency_phone" required placeholder="+44 7000 000000">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" name="emergency_email" placeholder="emergency@email.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Residential Address</label>
+                        <input type="text" name="emergency_address" placeholder="Full address">
+                    </div>
+
+                    <h4 style="margin: 20px 0 15px;">✅ Terms & Conditions</h4>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="terms" id="terms" required>
+                        <label for="terms">I agree to the <a href="{{ url_for('main.terms') }}">Terms &
+                                Conditions</a></label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="privacy" id="privacy" required>
+                        <label for="privacy">I agree to the <a href="{{ url_for('main.privacy') }}">Privacy
+                                Policy</a></label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="data_processing" id="dataProcessing" required>
+                        <label for="dataProcessing">I consent to the processing of my data for KYC purposes</label>
+                    </div>
+
+                    <div
+                        style="margin-top: 20px; padding: 15px; background: rgba(10,127,66,0.05); border-radius: var(--radius-md); border-left: 4px solid var(--success);">
+                        <p style="font-size: 14px; color: var(--success);">
+                            <strong>📌 Important:</strong> By submitting this application, you confirm that all
+                            information provided is accurate and complete.
+                            Your application will be reviewed by our KYC team. You will receive a confirmation email
+                            with your reference number.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="form-navigation">
+                    <button type="button" class="btn-prev" id="prevBtn" onclick="changeStep(-1)">← Previous</button>
+                    <button type="button" class="btn-next" id="nextBtn" onclick="changeStep(1)">Next →</button>
+                    <button type="submit" class="btn-submit" id="submitBtn" style="display:none;">📤 Submit
+                        Application</button>
+                </div>
+            </form>
+
+            <!-- Success Message -->
+            <div id="successMessage" style="display:none;">
+                <div class="success-message">
+                    <span class="success-icon">🎉</span>
+                    <h2>Application Submitted!</h2>
+                    <p>Your account application has been received and is being reviewed by our KYC team.</p>
+                    <div class="ref-number" id="refNumber">HSBC-20260101-ABC123</div>
+                    <p style="font-size: 14px; opacity: 0.6;">You will receive a confirmation email shortly.</p>
+                    <p style="font-size: 14px; opacity: 0.6;">We will notify you once your account is approved.</p>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary"
+                        style="margin-top: 20px; display: inline-block;">Return to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // ============================================
+    // STEP NAVIGATION
+    // ============================================
+    let currentStep = 1;
+    const totalSteps = 7;
+
+    function changeStep(delta) {
+        const newStep = currentStep + delta;
+        if (newStep < 1 || newStep > totalSteps) return;
+
+        // Validate current step before proceeding
+        if (delta > 0 && !validateStep(currentStep)) {
+            return;
+        }
+
+        // Save current step data
+        saveStepData(currentStep);
+
+        currentStep = newStep;
+        updateUI();
+    }
+
+    function updateUI() {
+        // Show/hide steps
+        document.querySelectorAll('.form-step').forEach(el => {
+            el.classList.remove('active');
+        });
+        document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
+
+        // Update progress
+        document.querySelectorAll('.step-indicator').forEach(el => {
+            const step = parseInt(el.dataset.step);
+            el.classList.remove('active', 'completed');
+            if (step === currentStep) {
+                el.classList.add('active');
+            } else if (step < currentStep) {
+                el.classList.add('completed');
+            }
+        });
+
+        // Update progress bar
+        const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+        document.getElementById('progressFill').style.width = progress + '%';
+
+        // Update buttons
+        document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-block';
+        document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'inline-block';
+        document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
+
+        // Update hidden field
+        document.getElementById('currentStep').value = currentStep;
+
+        // Scroll to top of form
+        document.querySelector('.register-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function validateStep(step) {
+        const form = document.getElementById('registrationForm');
+        const stepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+        const inputs = stepElement.querySelectorAll('input[required], select[required]');
+        let valid = true;
+
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.classList.add('error');
+                valid = false;
+            } else {
+                input.classList.remove('error');
+            }
+        });
+
+        // Special validations
+        if (step === 5) {
+            // Password match
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const pin = document.getElementById('transactionPin').value;
+            const confirmPin = document.getElementById('confirmPin').value;
+
+            if (password && confirm && password !== confirm) {
+                document.getElementById('passwordMatchError').classList.add('show');
+                valid = false;
+            } else {
+                document.getElementById('passwordMatchError').classList.remove('show');
+            }
+
+            if (pin && confirmPin && pin !== confirmPin) {
+                document.getElementById('pinMatchError').classList.add('show');
+                valid = false;
+            } else {
+                document.getElementById('pinMatchError').classList.remove('show');
+            }
+        }
+
+        if (!valid) {
+            // Show error message
+            const firstError = stepElement.querySelector('.error');
+            if (firstError) {
+                firstError.focus();
+            }
+            showToast('Please fill in all required fields correctly.', 'error');
+        }
+
+        return valid;
+    }
+
+    function saveStepData(step) {
+        // Save current step data to hidden fields or localStorage
+        // This is handled automatically by the form submission
+    }
+
+    // ============================================
+    // PASSWORD STRENGTH INDICATOR
+    // ============================================
+    document.getElementById('password').addEventListener('input', function () {
+        const password = this.value;
+        const bars = document.querySelectorAll('#passwordStrength .bar');
+        const strengthText = document.getElementById('strengthText');
+
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (password.length >= 12) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        // Reset bars
+        bars.forEach(bar => {
+            bar.className = 'bar';
+        });
+
+        let level = 'weak';
+        let message = 'Weak password';
+
+        if (strength >= 6) {
+            bars.forEach(bar => bar.classList.add('very-strong'));
+            level = 'very-strong';
+            message = 'Very Strong! 💪';
+        } else if (strength >= 5) {
+            bars.forEach((bar, i) => i < 5 ? bar.classList.add('strong') : null);
+            level = 'strong';
+            message = 'Strong password 👍';
+        } else if (strength >= 3) {
+            bars.forEach((bar, i) => i < 3 ? bar.classList.add('medium') : null);
+            level = 'medium';
+            message = 'Medium password 🤔';
+        } else if (strength >= 1) {
+            bars.forEach((bar, i) => i < 1 ? bar.classList.add('weak') : null);
+            level = 'weak';
+            message = 'Weak password ⚠️';
+        }
+
+        strengthText.textContent = password ? message : 'Enter a strong password';
+        strengthText.className = 'strength-text ' + (password ? level : '');
+    });
+
+    // ============================================
+    // FILE UPLOAD HANDLERS
+    // ============================================
+    function setupFileUpload(zoneId, previewId, nameId, sizeId, inputName) {
+        const zone = document.getElementById(zoneId);
+        const preview = document.getElementById(previewId);
+        const nameEl = document.getElementById(nameId);
+        const sizeEl = document.getElementById(sizeId);
+        const input = zone.querySelector('input[type="file"]');
+
+        zone.addEventListener('click', () => input.click());
+
+        input.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                // Validate file size (10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast('File size exceeds 10MB limit.', 'error');
+                    this.value = '';
+                    return;
+                }
+
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                if (!validTypes.includes(file.type)) {
+                    showToast('Invalid file type. Please upload JPG, PNG, or PDF.', 'error');
+                    this.value = '';
+                    return;
+                }
+
+                nameEl.textContent = file.name;
+                sizeEl.textContent = (file.size / 1024).toFixed(1) + ' KB';
+                preview.classList.add('show');
+            }
+        });
+    }
+
+    // Setup all upload zones
+    setupFileUpload('idFrontZone', 'idFrontPreview', 'idFrontName', 'idFrontSize', 'id_front');
+    setupFileUpload('idBackZone', 'idBackPreview', 'idBackName', 'idBackSize', 'id_back');
+    setupFileUpload('selfieZone', 'selfiePreview', 'selfieName', 'selfieSize', 'selfie');
+    setupFileUpload('addressProofZone', 'addressProofPreview', 'addressProofName', 'addressProofSize', 'address_proof');
+
+    function removeFile(type) {
+        const previewMap = {
+            'idFront': { preview: 'idFrontPreview', input: 'idFrontZone input[type="file"]' },
+            'idBack': { preview: 'idBackPreview', input: 'idBackZone input[type="file"]' },
+            'selfie': { preview: 'selfiePreview', input: 'selfieZone input[type="file"]' },
+            'addressProof': { preview: 'addressProofPreview', input: 'addressProofZone input[type="file"]' }
+        };
+
+        const config = previewMap[type];
+        if (!config) return;
+
+        document.getElementById(config.preview).classList.remove('show');
+        const input = document.querySelector(config.input);
+        if (input) input.value = '';
+    }
+
+    // ============================================
+    // FORM SUBMISSION
+    // ============================================
+    document.getElementById('registrationForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Validate all steps
+        let allValid = true;
+        for (let i = 1; i <= totalSteps; i++) {
+            if (!validateStep(i)) {
+                allValid = false;
+                currentStep = i;
+                updateUI();
+                break;
+            }
+        }
+
+        if (!allValid) return;
+
+        // Show loading
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Submitting...';
+
+        // Submit via AJAX
+        const formData = new FormData(this);
+
+        fetch('{{ url_for("auth.register") }}', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📤 Submit Application';
+
+                if (data.success) {
+                    document.getElementById('refNumber').textContent = data.ref_number || 'HSBC-20260101-ABC123';
+                    document.getElementById('registrationForm').style.display = 'none';
+                    document.querySelector('.form-navigation').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.querySelector('.progress-wrapper').style.display = 'none';
+                    showToast('✅ Application submitted successfully!', 'success');
+                } else {
+                    showToast('❌ ' + (data.error || 'Submission failed. Please try again.'), 'error');
+                }
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📤 Submit Application';
+                showToast('❌ Network error. Please try again.', 'error');
+                console.error('Error:', error);
+            });
+    });
+
+    // ============================================
+    // INITIALIZE
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function () {
+        updateUI();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,1144 @@
+{% extends "base.html" %}
+
+{% block title %}HSBC Bank United Kingdom | Official Online Banking{% endblock %}
+
+{% block head %}
+<style>
+    /* ============================================
+       HERO SECTION
+    ============================================ */
+    .hero {
+        background: linear-gradient(135deg, #001F5B 0%, #00337C 50%, #004A9E 100%);
+        color: var(--primary-white);
+        padding: 100px 0 80px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: rgba(212, 175, 55, 0.05);
+        border-radius: 50%;
+        animation: float 20s ease-in-out infinite;
+    }
+
+    .hero::after {
+        content: '🏦';
+        position: absolute;
+        bottom: -30px;
+        right: 10%;
+        font-size: 200px;
+        opacity: 0.03;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        50% {
+            transform: translate(-30px, 30px) scale(1.1);
+        }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: rgba(212, 175, 55, 0.2);
+        color: var(--accent-gold);
+        padding: 6px 18px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .hero h1 {
+        font-size: 52px;
+        font-weight: 800;
+        line-height: 1.15;
+        margin-bottom: 20px;
+    }
+
+    .hero h1 .highlight {
+        color: var(--accent-gold);
+        position: relative;
+    }
+
+    .hero p {
+        font-size: 19px;
+        line-height: 1.8;
+        opacity: 0.9;
+        max-width: 600px;
+        margin-bottom: 35px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .hero-buttons .btn-primary {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        padding: 16px 36px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hero-buttons .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+    }
+
+    .hero-buttons .btn-secondary {
+        background: transparent;
+        color: var(--primary-white);
+        padding: 16px 36px;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hero-buttons .btn-secondary:hover {
+        border-color: var(--accent-gold);
+        background: rgba(212, 175, 55, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 50px;
+        margin-top: 50px;
+        padding-top: 40px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .hero-stats .stat-item h4 {
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--accent-gold);
+        margin-bottom: 2px;
+    }
+
+    .hero-stats .stat-item p {
+        font-size: 14px;
+        opacity: 0.7;
+        margin-bottom: 0;
+    }
+
+    /* ============================================
+       TRUST BADGES
+    ============================================ */
+    .trust-badges {
+        background: var(--primary-white);
+        padding: 40px 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .trust-badges .badges-grid {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 50px;
+        flex-wrap: wrap;
+    }
+
+    .trust-badges .badge-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: var(--dark-grey);
+        opacity: 0.8;
+    }
+
+    .trust-badges .badge-item .icon {
+        font-size: 24px;
+    }
+
+    /* ============================================
+       FEATURES SECTION
+    ============================================ */
+    .features-section {
+        padding: 80px 0;
+        background: var(--light-grey);
+    }
+
+    .section-header {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 50px;
+    }
+
+    .section-header h2 {
+        font-size: 38px;
+        color: var(--primary-dark-blue);
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .section-header p {
+        font-size: 17px;
+        opacity: 0.7;
+        line-height: 1.7;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+    }
+
+    .feature-card {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 35px 30px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        border-bottom: 4px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--accent-gold);
+        transform: scaleX(0);
+        transition: var(--transition);
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .feature-card .icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .feature-card h3 {
+        font-size: 20px;
+        color: var(--primary-dark-blue);
+        margin-bottom: 12px;
+        font-weight: 700;
+    }
+
+    .feature-card p {
+        font-size: 15px;
+        opacity: 0.75;
+        line-height: 1.7;
+    }
+
+    .feature-card .learn-more {
+        display: inline-block;
+        margin-top: 15px;
+        color: var(--accent-gold);
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .feature-card .learn-more:hover {
+        transform: translateX(5px);
+    }
+
+    /* ============================================
+       IMAGE SHOWCASE SECTION - NEW
+    ============================================ */
+    .image-showcase {
+        padding: 70px 0;
+        background: var(--primary-white);
+    }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 25px;
+        margin-top: 30px;
+    }
+
+    .image-card {
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        background: var(--primary-white);
+        border: 1px solid var(--border-light);
+    }
+
+    .image-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--accent-gold);
+    }
+
+    .image-card .image-wrapper {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        background: var(--light-grey);
+        position: relative;
+    }
+
+    .image-card .image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .image-card:hover .image-wrapper img {
+        transform: scale(1.05);
+    }
+
+    .image-card .image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--light-grey), var(--border-light));
+        color: var(--primary-dark-blue);
+        font-size: 48px;
+    }
+
+    .image-card .image-placeholder span {
+        font-size: 14px;
+        opacity: 0.5;
+        margin-top: 8px;
+    }
+
+    .image-card .image-content {
+        padding: 18px 20px;
+        text-align: center;
+    }
+
+    .image-card .image-content h4 {
+        color: var(--primary-dark-blue);
+        font-size: 17px;
+        margin-bottom: 4px;
+        font-weight: 700;
+    }
+
+    .image-card .image-content p {
+        font-size: 13px;
+        opacity: 0.7;
+        margin: 0;
+    }
+
+    /* ============================================
+       PRODUCTS SECTION
+    ============================================ */
+    .products-section {
+        padding: 80px 0;
+        background: var(--primary-white);
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .product-card {
+        background: var(--light-grey);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        transition: var(--transition);
+        border: 1px solid var(--border-light);
+    }
+
+    .product-card:hover {
+        border-color: var(--accent-gold);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .product-card .product-icon {
+        font-size: 36px;
+        margin-bottom: 15px;
+    }
+
+    .product-card h4 {
+        font-size: 18px;
+        color: var(--primary-dark-blue);
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .product-card p {
+        font-size: 14px;
+        opacity: 0.75;
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+
+    .product-card .product-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 15px 0;
+    }
+
+    .product-card .product-features li {
+        font-size: 13px;
+        padding: 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.8;
+    }
+
+    .product-card .product-features li::before {
+        content: "✓";
+        color: var(--success);
+        font-weight: 700;
+    }
+
+    .product-card .btn-outline {
+        display: inline-block;
+        padding: 10px 24px;
+        border: 2px solid var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: var(--transition);
+        width: 100%;
+        text-align: center;
+    }
+
+    .product-card .btn-outline:hover {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+    }
+
+    /* ============================================
+       HOW IT WORKS
+    ============================================ */
+    .how-it-works {
+        padding: 80px 0;
+        background: var(--primary-dark-blue);
+        color: var(--primary-white);
+    }
+
+    .how-it-works .section-header h2 {
+        color: var(--primary-white);
+    }
+
+    .how-it-works .section-header p {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    .step-card {
+        text-align: center;
+        position: relative;
+    }
+
+    .step-card .step-number {
+        width: 60px;
+        height: 60px;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 800;
+        margin: 0 auto 20px;
+    }
+
+    .step-card h4 {
+        font-size: 18px;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .step-card p {
+        font-size: 14px;
+        opacity: 0.7;
+        line-height: 1.6;
+    }
+
+    .step-card .step-arrow {
+        position: absolute;
+        right: -15px;
+        top: 30px;
+        font-size: 30px;
+        opacity: 0.2;
+    }
+
+    @media (max-width: 768px) {
+        .step-card .step-arrow {
+            display: none;
+        }
+    }
+
+    /* ============================================
+       FAQ PREVIEW
+    ============================================ */
+    .faq-preview {
+        padding: 60px 0;
+        background: var(--light-grey);
+    }
+
+    .faq-item {
+        background: var(--primary-white);
+        border-radius: var(--radius-md);
+        padding: 20px 25px;
+        margin-bottom: 15px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .faq-item h4 {
+        color: var(--primary-dark-blue);
+        font-size: 17px;
+        margin-bottom: 5px;
+    }
+
+    .faq-item p {
+        opacity: 0.7;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    /* ============================================
+       CTA SECTION
+    ============================================ */
+    .cta-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #001F5B 0%, #00337C 100%);
+        color: var(--primary-white);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '🏦';
+        position: absolute;
+        right: -50px;
+        bottom: -50px;
+        font-size: 300px;
+        opacity: 0.03;
+    }
+
+    .cta-section h2 {
+        font-size: 40px;
+        font-weight: 800;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-section p {
+        font-size: 18px;
+        opacity: 0.8;
+        max-width: 600px;
+        margin: 0 auto 35px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-section .btn-primary {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        padding: 18px 45px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-section .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+    }
+
+    .cta-section .trust-text {
+        margin-top: 25px;
+        font-size: 14px;
+        opacity: 0.5;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 1200px) {
+        .image-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .hero h1 {
+            font-size: 38px;
+        }
+
+        .hero-stats {
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats .stat-item h4 {
+            font-size: 26px;
+        }
+
+        .section-header h2 {
+            font-size: 30px;
+        }
+
+        .cta-section h2 {
+            font-size: 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero {
+            padding: 60px 0 50px;
+        }
+
+        .hero h1 {
+            font-size: 30px;
+        }
+
+        .hero p {
+            font-size: 16px;
+        }
+
+        .hero-buttons .btn-primary,
+        .hero-buttons .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .trust-badges .badges-grid {
+            gap: 20px;
+        }
+
+        .trust-badges .badge-item {
+            font-size: 12px;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .image-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .image-card .image-wrapper {
+            height: 150px;
+        }
+
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .steps-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cta-section h2 {
+            font-size: 26px;
+        }
+
+        .cta-section p {
+            font-size: 16px;
+        }
+
+        .cta-section .btn-primary {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero h1 {
+            font-size: 26px;
+        }
+
+        .hero-stats {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .hero-stats .stat-item {
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+        }
+
+        .image-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .image-card .image-wrapper {
+            height: 180px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ============================================
+HERO SECTION
+============================================ -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge animate-fade-in-down">🏆 World-Class Banking Since 1865</div>
+            <h1 class="animate-fade-in-down delay-1">
+                Banking Built for<br>
+                <span class="highlight">Your Future</span>
+            </h1>
+            <p class="animate-fade-in-up delay-2">
+                Join millions of customers who trust HSBC for secure, reliable, and innovative banking services.
+                From everyday banking to global investments, we're here to help you succeed.
+            </p>
+            <div class="hero-buttons animate-fade-in-up delay-3">
+                {% if current_user.is_authenticated %}
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('admin.dashboard') }}" class="btn-primary">
+                    📊 Go to Admin Panel
+                </a>
+                {% else %}
+                <a href="{{ url_for('user.dashboard') }}" class="btn-primary">
+                    📊 Go to Dashboard
+                </a>
+                {% endif %}
+                {% else %}
+                <a href="{{ url_for('auth.register') }}" class="btn-primary">
+                    🚀 Open Your Account
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn-secondary">
+                    🔐 Log In
+                </a>
+                {% endif %}
+            </div>
+            <div class="hero-stats animate-fade-in-up delay-4">
+                <div class="stat-item">
+                    <h4>40M+</h4>
+                    <p>Customers Worldwide</p>
+                </div>
+                <div class="stat-item">
+                    <h4>£2.5T</h4>
+                    <p>Assets Under Management</p>
+                </div>
+                <div class="stat-item">
+                    <h4>60+</h4>
+                    <p>Countries & Territories</p>
+                </div>
+                <div class="stat-item">
+                    <h4>160+</h4>
+                    <p>Years of Trust</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+TRUST BADGES
+============================================ -->
+<section class="trust-badges animate-fade-in-up delay-1">
+    <div class="container">
+        <div class="badges-grid">
+            <div class="badge-item">
+                <span class="icon">🔒</span>
+                <span>Bank-Grade Security</span>
+            </div>
+            <div class="badge-item">
+                <span class="icon">⭐</span>
+                <span>Award-Winning Service</span>
+            </div>
+            <div class="badge-item">
+                <span class="icon">💰</span>
+                <span>FSCS Protected Up to £85,000</span>
+            </div>
+            <div class="badge-item">
+                <span class="icon">🌍</span>
+                <span>Global Presence</span>
+            </div>
+            <div class="badge-item">
+                <span class="icon">📱</span>
+                <span>24/7 Online Banking</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+FEATURES SECTION
+============================================ -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header animate-fade-in-up">
+            <h2>Why Choose HSBC?</h2>
+            <p>We combine global strength with local expertise to deliver exceptional banking experiences.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card animate-fade-in-up delay-1">
+                <span class="icon">🛡️</span>
+                <h3>Enterprise-Grade Security</h3>
+                <p>Your money and data are protected with advanced encryption, real-time fraud detection, and 24/7
+                    monitoring.</p>
+                <a href="{{ url_for('main.security') }}" class="learn-more">Learn More →</a>
+            </div>
+            <div class="feature-card animate-fade-in-up delay-2">
+                <span class="icon">⚡</span>
+                <h3>Fast & Reliable</h3>
+                <p>Most UK payments arrive within minutes. Our systems maintain 99.99% uptime for uninterrupted banking.
+                </p>
+                <a href="{{ url_for('user.payment') }}" class="learn-more">Learn More →</a>
+            </div>
+            <div class="feature-card animate-fade-in-up delay-3">
+                <span class="icon">🌍</span>
+                <h3>Global Reach, Local Touch</h3>
+                <p>With presence in over 60 countries, we offer international banking with local UK support.</p>
+                <a href="{{ url_for('main.about') }}" class="learn-more">Learn More →</a>
+            </div>
+            <div class="feature-card animate-fade-in-up delay-4">
+                <span class="icon">⭐</span>
+                <h3>Exceptional Support</h3>
+                <p>Our UK-based support team is available 24/7 via phone, chat, or in-branch to help you.</p>
+                <a href="{{ url_for('main.contact') }}" class="learn-more">Learn More →</a>
+            </div>
+            <div class="feature-card animate-fade-in-up delay-5">
+                <span class="icon">📱</span>
+                <h3>Smart Digital Banking</h3>
+                <p>Manage your finances anywhere with our award-winning mobile app and online platform.</p>
+                <a href="#" class="learn-more">Learn More →</a>
+            </div>
+            <div class="feature-card animate-fade-in-up delay-6">
+                <span class="icon">💡</span>
+                <h3>Innovative Products</h3>
+                <p>From competitive savings rates to flexible mortgages and investment options, we've got you covered.
+                </p>
+                <a href="{{ url_for('user.savings') }}" class="learn-more">Learn More →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+IMAGE SHOWCASE SECTION - 4 IMAGES
+============================================ -->
+<section class="image-showcase">
+    <div class="container">
+        <div class="section-header animate-fade-in-up">
+            <h2>Banking Reimagined</h2>
+            <p>Experience the future of banking with HSBC.</p>
+        </div>
+        <div class="image-grid">
+            <!-- Image 1 -->
+            <div class="image-card animate-fade-in-up delay-1">
+                <div class="image-wrapper">
+                    <img src="{{ url_for('static', filename='image/global.jpeg') }}" alt="Modern Banking"
+                        onerror="this.style.display='none'; this.parentElement.querySelector('.image-placeholder').style.display='flex';">
+                    <div class="image-placeholder" style="display:none;">
+                        🏦
+                        <span>Image 1</span>
+                    </div>
+                </div>
+                <div class="image-content">
+                    <h4>Global Banking</h4>
+                    <p>Access your money anywhere in the world</p>
+                </div>
+            </div>
+
+            <!-- Image 2 -->
+            <div class="image-card animate-fade-in-up delay-2">
+                <div class="image-wrapper">
+                    <img src="{{ url_for('static', filename='image/digitalbanking.jpeg') }}" alt="Digital Banking"
+                        onerror="this.style.display='none'; this.parentElement.querySelector('.image-placeholder').style.display='flex';">
+                    <div class="image-placeholder" style="display:none;">
+                        📱
+                        <span>Image 2</span>
+                    </div>
+                </div>
+                <div class="image-content">
+                    <h4>Digital Banking</h4>
+                    <p>Manage everything from your phone</p>
+                </div>
+            </div>
+
+            <!-- Image 3 -->
+            <div class="image-card animate-fade-in-up delay-3">
+                <div class="image-wrapper">
+                    <img src="{{ url_for('static', filename='image/security.jpeg') }}" alt="Security"
+                        onerror="this.style.display='none'; this.parentElement.querySelector('.image-placeholder').style.display='flex';">
+                    <div class="image-placeholder" style="display:none;">
+                        🛡️
+                        <span>Image 3</span>
+                    </div>
+                </div>
+                <div class="image-content">
+                    <h4>Enterprise Security</h4>
+                    <p>Your data is protected 24/7</p>
+                </div>
+            </div>
+
+            <!-- Image 4 -->
+            <div class="image-card animate-fade-in-up delay-4">
+                <div class="image-wrapper">
+                    <img src="{{ url_for('static', filename='image/chart.jpeg') }}" alt="Investment"
+                        onerror="this.style.display='none'; this.parentElement.querySelector('.image-placeholder').style.display='flex';">
+                    <div class="image-placeholder" style="display:none;">
+                        📈
+                        <span>Image 4</span>
+                    </div>
+                </div>
+                <div class="image-content">
+                    <h4>Smart Investing</h4>
+                    <p>Grow your wealth with expert guidance</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+PRODUCTS SECTION
+============================================ -->
+<section class="products-section">
+    <div class="container">
+        <div class="section-header animate-fade-in-up">
+            <h2>Our Products</h2>
+            <p>Tailored financial solutions designed to meet your unique needs.</p>
+        </div>
+        <div class="products-grid">
+            <div class="product-card animate-fade-in-up delay-1">
+                <div class="product-icon">💳</div>
+                <h4>Current Accounts</h4>
+                <p>Everyday banking with contactless payments, direct debits, and 24/7 access.</p>
+                <ul class="product-features">
+                    <li>Free Faster Payments</li>
+                    <li>Contactless Debit Card</li>
+                    <li>Arranged Overdraft</li>
+                </ul>
+                <a href="#" class="btn-outline">Explore Accounts</a>
+            </div>
+            <div class="product-card animate-fade-in-up delay-2">
+                <div class="product-icon">💰</div>
+                <h4>Savings & ISAs</h4>
+                <p>Grow your money with competitive interest rates and tax-efficient options.</p>
+                <ul class="product-features">
+                    <li>Easy Access Savings</li>
+                    <li>Fixed Rate Bonds</li>
+                    <li>Cash & Stocks ISAs</li>
+                </ul>
+                <a href="{{ url_for('user.savings') }}" class="btn-outline">Start Saving</a>
+            </div>
+            <div class="product-card animate-fade-in-up delay-3">
+                <div class="product-icon">🏠</div>
+                <h4>Mortgages & Loans</h4>
+                <p>Flexible financing solutions for your home, car, or personal needs.</p>
+                <ul class="product-features">
+                    <li>Competitive Rates</li>
+                    <li>Fixed & Variable Terms</li>
+                    <li>Quick Decisions</li>
+                </ul>
+                <a href="#" class="btn-outline">Learn More</a>
+            </div>
+            <div class="product-card animate-fade-in-up delay-4">
+                <div class="product-icon">🌍</div>
+                <h4>International Banking</h4>
+                <p>Send and receive money globally with competitive exchange rates.</p>
+                <ul class="product-features">
+                    <li>50+ Currencies</li>
+                    <li>SWIFT Transfers</li>
+                    <li>Competitive Fees</li>
+                </ul>
+                <a href="{{ url_for('user.payment') }}" class="btn-outline">Explore</a>
+            </div>
+            <div class="product-card animate-fade-in-up delay-5">
+                <div class="product-icon">📈</div>
+                <h4>Investments</h4>
+                <p>Build your wealth with professionally managed investment portfolios.</p>
+                <ul class="product-features">
+                    <li>Managed Portfolios</li>
+                    <li>Global Equities</li>
+                    <li>Bond Funds</li>
+                </ul>
+                <a href="{{ url_for('user.savings') }}" class="btn-outline">Start Investing</a>
+            </div>
+            <div class="product-card animate-fade-in-up delay-6">
+                <div class="product-icon">🔒</div>
+                <h4>Business Banking</h4>
+                <p>Comprehensive banking solutions for startups, SMEs, and corporations.</p>
+                <ul class="product-features">
+                    <li>Business Accounts</li>
+                    <li>Corporate Banking</li>
+                    <li>Merchant Services</li>
+                </ul>
+                <a href="#" class="btn-outline">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+HOW IT WORKS
+============================================ -->
+<section class="how-it-works">
+    <div class="container">
+        <div class="section-header animate-fade-in-up">
+            <h2>How It Works</h2>
+            <p>Getting started with HSBC is simple and straightforward.</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card animate-fade-in-up delay-1">
+                <div class="step-number">1</div>
+                <h4>Open Your Account</h4>
+                <p>Register online in minutes with your personal details and ID.</p>
+                <span class="step-arrow">→</span>
+            </div>
+            <div class="step-card animate-fade-in-up delay-2">
+                <div class="step-number">2</div>
+                <h4>Verify Your Identity</h4>
+                <p>We'll verify your identity quickly and securely.</p>
+                <span class="step-arrow">→</span>
+            </div>
+            <div class="step-card animate-fade-in-up delay-3">
+                <div class="step-number">3</div>
+                <h4>Start Banking</h4>
+                <p>Access your account, make transfers, and manage your finances.</p>
+                <span class="step-arrow">→</span>
+            </div>
+            <div class="step-card animate-fade-in-up delay-4">
+                <div class="step-number">4</div>
+                <h4>Grow Your Wealth</h4>
+                <p>Explore savings, investments, and other financial products.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+FAQ PREVIEW
+============================================ -->
+<section class="faq-preview">
+    <div class="container">
+        <div class="section-header animate-fade-in-up">
+            <h2>Frequently Asked Questions</h2>
+            <p>Quick answers to common questions about HSBC banking.</p>
+        </div>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="faq-item animate-fade-in-up delay-1">
+                <h4>🤔 Is my money protected?</h4>
+                <p>Yes! Your eligible deposits are protected by the Financial Services Compensation Scheme (FSCS) up to
+                    £85,000 per person, per banking group.</p>
+            </div>
+            <div class="faq-item animate-fade-in-up delay-2">
+                <h4>🤔 How do I open an account?</h4>
+                <p>Simply click the "Open Your Account" button above, fill in your details, verify your identity, and
+                    you're ready to go!</p>
+            </div>
+            <div class="faq-item animate-fade-in-up delay-3">
+                <h4>🤔 How fast are transfers?</h4>
+                <p>Faster Payments usually arrive within seconds or minutes. International SWIFT transfers typically
+                    take 1-4 working days depending on the destination.</p>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="{{ url_for('main.help') }}"
+                    style="color: var(--accent-gold); font-weight: 600; text-decoration: none;">View All FAQs →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+CTA SECTION
+============================================ -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="animate-fade-in-down">Ready to Take Control of Your Finances?</h2>
+        <p class="animate-fade-in-up delay-1">Join HSBC today and experience world-class banking with security,
+            reliability, and innovation at its best.</p>
+        {% if current_user.is_authenticated %}
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('admin.dashboard') }}" class="btn-primary animate-fade-in-up delay-2">
+            📊 Go to Admin Panel
+        </a>
+        {% else %}
+        <a href="{{ url_for('user.dashboard') }}" class="btn-primary animate-fade-in-up delay-2">
+            📊 Go to Dashboard
+        </a>
+        {% endif %}
+        {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn-primary animate-fade-in-up delay-2">
+            🚀 Open Your Account Now
+        </a>
+        {% endif %}
+        <p class="trust-text animate-fade-in-up delay-3">
+            🔒 Your data is secure. Trusted by millions worldwide.
+        </p>
+    </div>
+</section>
+{% endblock %}

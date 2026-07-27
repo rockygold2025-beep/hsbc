@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History | HSBC Bank{% endblock %}
+
+{% block head %}
+<style>
+    .history-section {
+        padding: 40px 0;
+    }
+
+    .history-header {
+        margin-bottom: 30px;
+    }
+
+    .history-header h1 {
+        font-size: 32px;
+        color: var(--primary-dark-blue);
+        margin-bottom: 5px;
+    }
+
+    .history-header p {
+        opacity: 0.7;
+        font-size: 16px;
+    }
+
+    .filters {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        background: var(--primary-white);
+        padding: 20px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .filters select,
+    .filters input {
+        padding: 10px 15px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        background: white;
+    }
+
+    .filters select:focus,
+    .filters input:focus {
+        border-color: var(--accent-gold);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
+    .filters .btn-filter {
+        padding: 10px 24px;
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filters .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .section-block {
+        background: var(--primary-white);
+        border-radius: var(--radius-lg);
+        padding: 25px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .section-header h2 {
+        font-size: 20px;
+        color: var(--primary-dark-blue);
+    }
+
+    .section-header .count {
+        font-size: 14px;
+        opacity: 0.7;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+    }
+
+    .status-approved {
+        background: rgba(10, 127, 66, 0.15);
+        color: var(--success);
+    }
+
+    .status-rejected {
+        background: rgba(220, 38, 38, 0.15);
+        color: var(--error);
+    }
+
+    .amount-out {
+        color: var(--error);
+        font-weight: 600;
+    }
+
+    .amount-in {
+        color: var(--success);
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        opacity: 0.6;
+    }
+
+    .empty-state .empty-icon {
+        font-size: 40px;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .pagination button {
+        padding: 8px 16px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        background: white;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .pagination button:hover {
+        border-color: var(--accent-gold);
+    }
+
+    .pagination button.active {
+        background: var(--accent-gold);
+        color: var(--primary-dark-blue);
+        border-color: var(--accent-gold);
+    }
+
+    .pagination button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 600px) {
+        .history-header h1 {
+            font-size: 26px;
+        }
+
+        .filters {
+            flex-direction: column;
+        }
+
+        .filters select,
+        .filters input,
+        .filters .btn-filter {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="history-section">
+    <div class="container">
+        <div class="history-header">
+            <h1>📊 Transaction History</h1>
+            <p>View all your transactions and filter by type or status.</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <select id="typeFilter" onchange="applyFilters()">
+                <option value="all">All Types</option>
+                <option value="local">Local Transfers</option>
+                <option value="international">International Transfers</option>
+            </select>
+            <select id="statusFilter" onchange="applyFilters()">
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+            <input type="date" id="dateFrom" onchange="applyFilters()">
+            <input type="date" id="dateTo" onchange="applyFilters()">
+            <button class="btn-filter" onclick="applyFilters()">Apply Filters</button>
+            <button class="btn-filter" onclick="resetFilters()" style="background:var(--light-grey);">Reset</button>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="section-block">
+            <div class="section-header">
+                <h2>All Transactions</h2>
+                <span class="count" id="transactionCount">{{ transactions|length }} total</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table" id="transactionTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionBody">
+                        {% if transactions %}
+                        {% for t in transactions %}
+                        <tr data-type="{{ t.transaction_type }}" data-status="{{ t.status }}"
+                            data-date="{{ t.created_at.strftime('%Y-%m-%d') }}">
+                            <td>{{ t.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{% if t.transaction_type == 'international' %}🌍 International{% else %}🇬🇧 Local{%
+                                endif %}</td>
+                            <td>{{ t.sender.username if t.sender else 'System' }}</td>
+                            <td>{{ t.receiver.username if t.receiver else 'International Transfer' }}</td>
+                            <td class="{% if t.sender_id == current_user.id %}amount-out{% else %}amount-in{% endif %}">
+                                {% if t.sender_id == current_user.id %}-{% endif %}£{{ "%.2f"|format(t.amount) }}
+                            </td>
+                            <td><span class="status-badge status-{{ t.status }}">{{ t.status }}</span></td>
+                            <td>{{ t.description|truncate(30) if t.description else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <span class="empty-icon">📭</span>
+                                No transactions found
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination">
+                <button onclick="changePage('prev')" id="prevPage">← Previous</button>
+                <span id="pageInfo" style="display:flex;align-items:center;">Page 1 of 1</span>
+                <button onclick="changePage('next')" id="nextPage">Next →</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    let currentPage = 1;
+    const perPage = 10;
+    let filteredRows = [];
+
+    function applyFilters() {
+        const typeFilter = document.getElementById('typeFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const dateFrom = document.getElementById('dateFrom').value;
+        const dateTo = document.getElementById('dateTo').value;
+
+        const rows = document.querySelectorAll('#transactionBody tr');
+        filteredRows = [];
+
+        rows.forEach(row => {
+            if (row.cells.length === 1) return;
+            const type = row.dataset.type || 'local';
+            const status = row.dataset.status || 'pending';
+            const date = row.dataset.date || '';
+
+            let show = true;
+            if (typeFilter !== 'all' && type !== typeFilter) show = false;
+            if (statusFilter !== 'all' && status !== statusFilter) show = false;
+            if (dateFrom && date < dateFrom) show = false;
+            if (dateTo && date > dateTo) show = false;
+
+            if (show) filteredRows.push(row);
+        });
+
+        document.getElementById('transactionCount').textContent = filteredRows.length + ' total';
+        currentPage = 1;
+        renderPage();
+    }
+
+    function renderPage() {
+        const start = (currentPage - 1) * perPage;
+        const end = start + perPage;
+        const pageRows = filteredRows.slice(start, end);
+
+        // Hide all rows first
+        document.querySelectorAll('#transactionBody tr').forEach(row => {
+            row.style.display = 'none';
+        });
+
+        // Show only the rows for current page
+        pageRows.forEach(row => {
+            row.style.display = '';
+        });
+
+        // Update pagination
+        const totalPages = Math.ceil(filteredRows.length / perPage);
+        document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${Math.max(1, totalPages)}`;
+        document.getElementById('prevPage').disabled = currentPage <= 1;
+        document.getElementById('nextPage').disabled = currentPage >= totalPages;
+    }
+
+    function changePage(direction) {
+        const totalPages = Math.ceil(filteredRows.length / perPage);
+        if (direction === 'prev' && currentPage > 1) {
+            currentPage--;
+        } else if (direction === 'next' && currentPage < totalPages) {
+            currentPage++;
+        }
+        renderPage();
+    }
+
+    function resetFilters() {
+        document.getElementById('typeFilter').value = 'all';
+        document.getElementById('statusFilter').value = 'all';
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value = '';
+        applyFilters();
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function () {
+        const rows = document.querySelectorAll('#transactionBody tr');
+        filteredRows = Array.from(rows).filter(row => row.cells.length > 1);
+        document.getElementById('transactionCount').textContent = filteredRows.length + ' total';
+        renderPage();
+    });
+</script>
+{% endblock %}

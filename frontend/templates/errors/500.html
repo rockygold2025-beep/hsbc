@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Server Error | HSBC Bank{% endblock %}
+{% block content %}
+<div class="container" style="text-align:center; padding:60px 0;">
+    <h1 style="font-size: 80px; color: var(--primary-dark-blue);">500</h1>
+    <p style="font-size: 20px;">Something went wrong on our end. Please try again later.</p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary">← Back to Home</a>
+</div>
+{% endblock %}
