@@ -7,21 +7,20 @@ from flask import (
     flash,
     session,
     jsonify,
-    current_app,
 )
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from backend.extensions import db
-from backend.models import User, PendingApplication, KycDocument, AuditLog
+from backend.extensions import db, csrf
+from backend.models import User, PendingApplication, AuditLog
 from datetime import datetime
 import json
-import os
 import traceback
 
 auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
+@csrf.exempt
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("user.dashboard"))
@@ -177,7 +176,7 @@ def register():
             form_data["transaction_pin"] = generate_password_hash(pin)
             form_data.pop("confirm_pin", None)
 
-            # Hash security answers (optional but good)
+            # Hash security answers
             for i in range(1, 4):
                 ans = form_data.get(f"security_answer_{i}")
                 if ans:
@@ -250,8 +249,6 @@ def login():
         if user.is_admin:
             return redirect(url_for("admin.dashboard"))
         else:
-            # If there’s a pending international transfer, redirect to payment page
-            # We’ll handle that in the user dashboard route
             return redirect(url_for("user.dashboard"))
 
     return render_template("login.html")
