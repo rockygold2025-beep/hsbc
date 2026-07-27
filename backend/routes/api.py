@@ -391,6 +391,7 @@ def reject_transaction(transaction_id):
 
 
 # ---- Admin: Top Up User ----
+# ---- Admin: Top Up User ----
 @api_bp.route("/admin/topup", methods=["POST"])
 @csrf.exempt
 @login_required
@@ -400,22 +401,45 @@ def admin_topup():
     data = request.get_json()
     user_id = data.get("user_id")
     amount = data.get("amount")
+    description = data.get("description", "").strip()
+
     if not user_id or not amount or float(amount) <= 0:
         return jsonify({"error": "Invalid user ID or amount"}), 400
+
     amount = float(amount)
     user = User.query.get(user_id)
     if not user or user.is_admin:
         return jsonify({"error": "User not found or invalid"}), 404
+
+    # Update balance
     user.balance += amount
+
+    # Create a transaction record (so the user sees it in history)
+    topup_txn = Transaction(
+        sender_id=current_user.id,  # admin is the "sender"
+        receiver_id=user.id,
+        amount=amount,
+        description=description or f"💰 Top‑up by admin",
+        status="approved",  # auto‑approved
+        transaction_type="topup",
+        created_at=datetime.utcnow(),
+        approved_at=datetime.utcnow(),
+        approved_by=current_user.id,
+    )
+    db.session.add(topup_txn)
+
+    # Log admin action
     action = AdminAction(
         admin_id=current_user.id,
         target_user_id=user.id,
         action_type="topup",
         amount=amount,
-        description=f"Admin topped up £{amount:.2f}",
+        description=f"Admin topped up £{amount:.2f} for {user.username}",
     )
     db.session.add(action)
+
     db.session.commit()
+
     return jsonify(
         {
             "message": f"Successfully topped up £{amount:.2f} to {user.username}",
