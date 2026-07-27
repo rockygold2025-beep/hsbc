@@ -29,9 +29,8 @@ class ProductionConfig(Config):
     SESSION_COOKIE_SECURE = True
     REMEMBER_COOKIE_SECURE = True
 
-    # ⭐ SQLite on Render’s persistent disk
-    DB_DIR = os.environ.get("RENDER_DISK_PATH", os.path.join(basedir, ".."))
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(DB_DIR, "banking.db")
+    # Use the DATABASE_URL environment variable (Supabase / any PostgreSQL)
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///fallback.db")
 
 
 config = {
