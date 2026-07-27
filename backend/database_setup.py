@@ -5,12 +5,30 @@ from datetime import datetime
 
 
 def create_default_data():
-    """Create only the admin user if it doesn't exist."""
+    """Create admin and system user if they don't exist."""
+
+    # System user (REQUIRED for international transfers)
+    if not User.query.filter_by(username="system").first():
+        system = User(
+            username="system",
+            email="system@hsbc.com",
+            password_hash=generate_password_hash("System@2026"),
+            pin_hash=generate_password_hash("123456"),
+            is_admin=False,
+            balance=0.0,
+            is_active=True,
+            is_verified=True,
+            created_at=datetime.utcnow(),
+        )
+        db.session.add(system)
+        print("✅ System user created for international transfers.")
+
+    # Admin user
     if not User.query.filter_by(username="admin").first():
         admin = User(
             username="admin",
             email="admin@hsbc.com",
-            password_hash=generate_password_hash("administeration@2026"git),
+            password_hash=generate_password_hash("Admin@2026"),
             pin_hash=generate_password_hash("123456"),
             is_admin=True,
             balance=0.0,
@@ -19,7 +37,7 @@ def create_default_data():
             created_at=datetime.utcnow(),
         )
         db.session.add(admin)
-        print("✅ Admin user created: admin / administeration@2026 / PIN: 123456")
+        print("✅ Admin user created: admin / Admin@2026 / PIN: 123456")
     else:
         admin = User.query.filter_by(username="admin").first()
         if not admin.is_active:
@@ -29,4 +47,4 @@ def create_default_data():
             print("✅ Admin activated.")
 
     db.session.commit()
-    print("✅ Database ready – admin user only.")
+    print("✅ Database ready – admin and system user only.")

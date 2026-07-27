@@ -170,7 +170,7 @@ def register():
                     400,
                 )
 
-            # 🔒 HASH PASSWORD and PIN before storing (CRITICAL)
+            # 🔒 HASH PASSWORD and PIN before storing
             form_data["password"] = generate_password_hash(password)
             form_data.pop("confirm_password", None)
             form_data["transaction_pin"] = generate_password_hash(pin)
