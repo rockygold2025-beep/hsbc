@@ -28,9 +28,8 @@ class ProductionConfig(Config):
     SQLALCHEMY_ECHO = False
     SESSION_COOKIE_SECURE = True
     REMEMBER_COOKIE_SECURE = True
-
-    # Use the DATABASE_URL environment variable (Supabase / any PostgreSQL)
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///fallback.db")
+    # ONLY use the DATABASE_URL environment variable (no fallback)
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
 
 
 config = {
