@@ -288,7 +288,8 @@
         position: relative;
     }
 
-    .upload-zone:hover {
+    .upload-zone:hover,
+    .upload-zone:focus {
         border-color: var(--accent-gold);
         background: rgba(212, 175, 55, 0.03);
     }
@@ -341,6 +342,17 @@
 
     .upload-preview .preview-icon {
         font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+    }
+
+    .upload-preview .preview-icon img {
+        max-width: 40px;
+        max-height: 40px;
+        border-radius: 6px;
+        object-fit: cover;
     }
 
     .upload-preview .preview-info {
@@ -363,6 +375,7 @@
         color: var(--error);
         cursor: pointer;
         font-size: 18px;
+        padding: 5px 8px;
     }
 
     /* Navigation Buttons */
@@ -1007,56 +1020,61 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Front of Valid ID <span class="required">*</span></label>
-                            <div class="upload-zone" id="idFrontZone">
+                            <div class="upload-zone" role="button" tabindex="0" aria-label="Upload front of ID">
                                 <span class="upload-icon">📷</span>
-                                <div class="upload-text">Click or drag to upload</div>
+                                <div class="upload-text">Click or tap to upload</div>
                                 <div class="upload-subtext">JPG, PNG, PDF (Max 10MB)</div>
-                                <input type="file" name="id_front" accept=".jpg,.jpeg,.png,.pdf" required>
+                                <input type="file" name="id_front" id="idFrontInput" accept=".jpg,.jpeg,.png,.pdf"
+                                    required>
                             </div>
                             <div class="upload-preview" id="idFrontPreview">
                                 <span class="preview-icon">📄</span>
                                 <div class="preview-info">
-                                    <div class="file-name" id="idFrontName">file.jpg</div>
-                                    <div class="file-size" id="idFrontSize">0 KB</div>
+                                    <div class="file-name" id="idFrontName"></div>
+                                    <div class="file-size" id="idFrontSize"></div>
                                 </div>
                                 <button type="button" class="remove-file" onclick="removeFile('idFront')">✕</button>
                             </div>
+                            <div class="error-message" id="idFrontError"></div>
                         </div>
                         <div class="form-group">
                             <label>Back of Valid ID <span class="required">*</span></label>
-                            <div class="upload-zone" id="idBackZone">
+                            <div class="upload-zone" role="button" tabindex="0" aria-label="Upload back of ID">
                                 <span class="upload-icon">📷</span>
-                                <div class="upload-text">Click or drag to upload</div>
+                                <div class="upload-text">Click or tap to upload</div>
                                 <div class="upload-subtext">JPG, PNG, PDF (Max 10MB)</div>
-                                <input type="file" name="id_back" accept=".jpg,.jpeg,.png,.pdf" required>
+                                <input type="file" name="id_back" id="idBackInput" accept=".jpg,.jpeg,.png,.pdf"
+                                    required>
                             </div>
                             <div class="upload-preview" id="idBackPreview">
                                 <span class="preview-icon">📄</span>
                                 <div class="preview-info">
-                                    <div class="file-name" id="idBackName">file.jpg</div>
-                                    <div class="file-size" id="idBackSize">0 KB</div>
+                                    <div class="file-name" id="idBackName"></div>
+                                    <div class="file-size" id="idBackSize"></div>
                                 </div>
                                 <button type="button" class="remove-file" onclick="removeFile('idBack')">✕</button>
                             </div>
+                            <div class="error-message" id="idBackError"></div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Selfie / Passport-style Photograph <span class="required">*</span></label>
-                        <div class="upload-zone" id="selfieZone">
+                        <div class="upload-zone" role="button" tabindex="0" aria-label="Upload selfie">
                             <span class="upload-icon">🤳</span>
-                            <div class="upload-text">Click or drag to upload</div>
+                            <div class="upload-text">Click or tap to upload</div>
                             <div class="upload-subtext">JPG, PNG (Max 10MB)</div>
-                            <input type="file" name="selfie" accept=".jpg,.jpeg,.png" required>
+                            <input type="file" name="selfie" id="selfieInput" accept=".jpg,.jpeg,.png" required>
                         </div>
                         <div class="upload-preview" id="selfiePreview">
                             <span class="preview-icon">📄</span>
                             <div class="preview-info">
-                                <div class="file-name" id="selfieName">selfie.jpg</div>
-                                <div class="file-size" id="selfieSize">0 KB</div>
+                                <div class="file-name" id="selfieName"></div>
+                                <div class="file-size" id="selfieSize"></div>
                             </div>
                             <button type="button" class="remove-file" onclick="removeFile('selfie')">✕</button>
                         </div>
+                        <div class="error-message" id="selfieError"></div>
                     </div>
 
                     <div class="form-group">
@@ -1070,20 +1088,22 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <div class="upload-zone" id="addressProofZone">
+                        <div class="upload-zone" role="button" tabindex="0" aria-label="Upload address proof">
                             <span class="upload-icon">📄</span>
-                            <div class="upload-text">Click or drag to upload</div>
+                            <div class="upload-text">Click or tap to upload</div>
                             <div class="upload-subtext">JPG, PNG, PDF (Max 10MB)</div>
-                            <input type="file" name="address_proof" accept=".jpg,.jpeg,.png,.pdf" required>
+                            <input type="file" name="address_proof" id="addressProofInput" accept=".jpg,.jpeg,.png,.pdf"
+                                required>
                         </div>
                         <div class="upload-preview" id="addressProofPreview">
                             <span class="preview-icon">📄</span>
                             <div class="preview-info">
-                                <div class="file-name" id="addressProofName">file.pdf</div>
-                                <div class="file-size" id="addressProofSize">0 KB</div>
+                                <div class="file-name" id="addressProofName"></div>
+                                <div class="file-size" id="addressProofSize"></div>
                             </div>
                             <button type="button" class="remove-file" onclick="removeFile('addressProof')">✕</button>
                         </div>
+                        <div class="error-message" id="addressProofError"></div>
                     </div>
                 </div>
 
@@ -1225,26 +1245,19 @@
         const newStep = currentStep + delta;
         if (newStep < 1 || newStep > totalSteps) return;
 
-        // Validate current step before proceeding
         if (delta > 0 && !validateStep(currentStep)) {
             return;
         }
 
-        // Save current step data
         saveStepData(currentStep);
-
         currentStep = newStep;
         updateUI();
     }
 
     function updateUI() {
-        // Show/hide steps
-        document.querySelectorAll('.form-step').forEach(el => {
-            el.classList.remove('active');
-        });
+        document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
         document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
 
-        // Update progress
         document.querySelectorAll('.step-indicator').forEach(el => {
             const step = parseInt(el.dataset.step);
             el.classList.remove('active', 'completed');
@@ -1255,40 +1268,41 @@
             }
         });
 
-        // Update progress bar
         const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
         document.getElementById('progressFill').style.width = progress + '%';
 
-        // Update buttons
         document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-block';
         document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'inline-block';
         document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
 
-        // Update hidden field
         document.getElementById('currentStep').value = currentStep;
-
-        // Scroll to top of form
         document.querySelector('.register-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function validateStep(step) {
-        const form = document.getElementById('registrationForm');
         const stepElement = document.querySelector(`.form-step[data-step="${step}"]`);
         const inputs = stepElement.querySelectorAll('input[required], select[required]');
         let valid = true;
 
         inputs.forEach(input => {
-            if (!input.value.trim()) {
-                input.classList.add('error');
-                valid = false;
+            if (input.type === "file") {
+                if (input.files.length === 0) {
+                    input.classList.add("error");
+                    valid = false;
+                } else {
+                    input.classList.remove("error");
+                }
             } else {
-                input.classList.remove('error');
+                if (!input.value.trim()) {
+                    input.classList.add("error");
+                    valid = false;
+                } else {
+                    input.classList.remove("error");
+                }
             }
         });
 
-        // Special validations
         if (step === 5) {
-            // Password match
             const password = document.getElementById('password').value;
             const confirm = document.getElementById('confirmPassword').value;
             const pin = document.getElementById('transactionPin').value;
@@ -1310,24 +1324,18 @@
         }
 
         if (!valid) {
-            // Show error message
             const firstError = stepElement.querySelector('.error');
-            if (firstError) {
-                firstError.focus();
-            }
+            if (firstError) firstError.focus();
             showToast('Please fill in all required fields correctly.', 'error');
         }
 
         return valid;
     }
 
-    function saveStepData(step) {
-        // Save current step data to hidden fields or localStorage
-        // This is handled automatically by the form submission
-    }
+    function saveStepData(step) { }
 
     // ============================================
-    // PASSWORD STRENGTH INDICATOR
+    // PASSWORD STRENGTH
     // ============================================
     document.getElementById('password').addEventListener('input', function () {
         const password = this.value;
@@ -1342,13 +1350,8 @@
         if (/[0-9]/.test(password)) strength++;
         if (/[^A-Za-z0-9]/.test(password)) strength++;
 
-        // Reset bars
-        bars.forEach(bar => {
-            bar.className = 'bar';
-        });
-
-        let level = 'weak';
-        let message = 'Weak password';
+        bars.forEach(bar => bar.className = 'bar');
+        let level = 'weak', message = 'Weak password';
 
         if (strength >= 6) {
             bars.forEach(bar => bar.classList.add('very-strong'));
@@ -1363,7 +1366,7 @@
             level = 'medium';
             message = 'Medium password 🤔';
         } else if (strength >= 1) {
-            bars.forEach((bar, i) => i < 1 ? bar.classList.add('weak') : null);
+            bars[0].classList.add('weak');
             level = 'weak';
             message = 'Weak password ⚠️';
         }
@@ -1373,63 +1376,91 @@
     });
 
     // ============================================
-    // FILE UPLOAD HANDLERS
+    // ENHANCED MOBILE‑FRIENDLY FILE UPLOAD
     // ============================================
-    function setupFileUpload(zoneId, previewId, nameId, sizeId, inputName) {
-        const zone = document.getElementById(zoneId);
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
+    const MAX_SIZE = 10 * 1024 * 1024;
+
+    function setupUploadZone(inputId, previewId, nameId, sizeId, errorId) {
+        const input = document.getElementById(inputId);
         const preview = document.getElementById(previewId);
         const nameEl = document.getElementById(nameId);
         const sizeEl = document.getElementById(sizeId);
-        const input = zone.querySelector('input[type="file"]');
+        const errorEl = document.getElementById(errorId);
+        const zone = input.closest('.upload-zone');
 
         zone.addEventListener('click', () => input.click());
+        zone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                input.click();
+            }
+        });
 
         input.addEventListener('change', function () {
             const file = this.files[0];
-            if (file) {
-                // Validate file size (10MB)
-                if (file.size > 10 * 1024 * 1024) {
-                    showToast('File size exceeds 10MB limit.', 'error');
-                    this.value = '';
-                    return;
-                }
+            errorEl.textContent = '';
+            preview.style.display = 'none';
 
-                // Validate file type
-                const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-                if (!validTypes.includes(file.type)) {
-                    showToast('Invalid file type. Please upload JPG, PNG, or PDF.', 'error');
-                    this.value = '';
-                    return;
-                }
+            if (!file) return;
 
-                nameEl.textContent = file.name;
-                sizeEl.textContent = (file.size / 1024).toFixed(1) + ' KB';
-                preview.classList.add('show');
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                errorEl.textContent = '❌ Only JPG, PNG, or PDF allowed.';
+                this.value = '';
+                return;
             }
+
+            if (file.size > MAX_SIZE) {
+                errorEl.textContent = '❌ File is too large (max 10MB).';
+                this.value = '';
+                return;
+            }
+
+            nameEl.textContent = file.name;
+            sizeEl.textContent = (file.size / 1024).toFixed(1) + ' KB';
+
+            const previewIcon = preview.querySelector('.preview-icon');
+            if (previewIcon) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewIcon.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width:40px;max-height:40px;border-radius:6px;object-fit:cover;">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    previewIcon.innerHTML = '📄';
+                }
+            }
+
+            preview.style.display = 'flex';
+            input.classList.add('success');
         });
     }
 
-    // Setup all upload zones
-    setupFileUpload('idFrontZone', 'idFrontPreview', 'idFrontName', 'idFrontSize', 'id_front');
-    setupFileUpload('idBackZone', 'idBackPreview', 'idBackName', 'idBackSize', 'id_back');
-    setupFileUpload('selfieZone', 'selfiePreview', 'selfieName', 'selfieSize', 'selfie');
-    setupFileUpload('addressProofZone', 'addressProofPreview', 'addressProofName', 'addressProofSize', 'address_proof');
-
     function removeFile(type) {
-        const previewMap = {
-            'idFront': { preview: 'idFrontPreview', input: 'idFrontZone input[type="file"]' },
-            'idBack': { preview: 'idBackPreview', input: 'idBackZone input[type="file"]' },
-            'selfie': { preview: 'selfiePreview', input: 'selfieZone input[type="file"]' },
-            'addressProof': { preview: 'addressProofPreview', input: 'addressProofZone input[type="file"]' }
+        const config = {
+            'idFront': { input: 'idFrontInput', preview: 'idFrontPreview', error: 'idFrontError' },
+            'idBack': { input: 'idBackInput', preview: 'idBackPreview', error: 'idBackError' },
+            'selfie': { input: 'selfieInput', preview: 'selfiePreview', error: 'selfieError' },
+            'addressProof': { input: 'addressProofInput', preview: 'addressProofPreview', error: 'addressProofError' }
         };
-
-        const config = previewMap[type];
-        if (!config) return;
-
-        document.getElementById(config.preview).classList.remove('show');
-        const input = document.querySelector(config.input);
-        if (input) input.value = '';
+        const c = config[type];
+        if (!c) return;
+        const input = document.getElementById(c.input);
+        const preview = document.getElementById(c.preview);
+        const error = document.getElementById(c.error);
+        input.value = '';
+        preview.style.display = 'none';
+        error.textContent = '';
+        input.classList.remove('success');
+        const icon = preview.querySelector('.preview-icon');
+        if (icon) icon.innerHTML = ''; // clear thumbnail
     }
+
+    setupUploadZone('idFrontInput', 'idFrontPreview', 'idFrontName', 'idFrontSize', 'idFrontError');
+    setupUploadZone('idBackInput', 'idBackPreview', 'idBackName', 'idBackSize', 'idBackError');
+    setupUploadZone('selfieInput', 'selfiePreview', 'selfieName', 'selfieSize', 'selfieError');
+    setupUploadZone('addressProofInput', 'addressProofPreview', 'addressProofName', 'addressProofSize', 'addressProofError');
 
     // ============================================
     // FORM SUBMISSION
@@ -1437,7 +1468,6 @@
     document.getElementById('registrationForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Validate all steps
         let allValid = true;
         for (let i = 1; i <= totalSteps; i++) {
             if (!validateStep(i)) {
@@ -1450,12 +1480,10 @@
 
         if (!allValid) return;
 
-        // Show loading
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
         submitBtn.textContent = '⏳ Submitting...';
 
-        // Submit via AJAX
         const formData = new FormData(this);
 
         fetch('{{ url_for("auth.register") }}', {
